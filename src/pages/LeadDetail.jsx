@@ -32,7 +32,7 @@ export default function LeadDetail() {
 
   const offerings = useMemo(() => (lead ? offeringEntries(lead) : []), [lead])
   const offeringLabelsMemo = useMemo(() => offeringLabels(profile, business.service), [profile, business.service])
-  const offeringLabels = useMemo(() => {
+  const offeringLabelsMap = useMemo(() => {
     const map = { ...offeringLabelsMemo }
     for (const o of offerings) if (!map[o.key]) map[o.key] = o.label
     return map
@@ -158,7 +158,7 @@ export default function LeadDetail() {
             </div>
 
             {lead.analysis ? (
-              <ScoreCompare lead={lead} offeringKey={selectedKey} offeringLabels={offeringLabels} />
+              <ScoreCompare lead={lead} offeringKey={selectedKey} offeringLabels={offeringLabelsMap} />
             ) : null}
           </section>
 
