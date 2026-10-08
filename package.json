@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "mock-api": "node scripts/mock-api.mjs",
-    "check-bundle": "node scripts/check-bundle.mjs"
+    "check-bundle": "node scripts/check-bundle.mjs",
+    "icons": "node scripts/make-icons.mjs"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.13.0",
