@@ -33,11 +33,15 @@ export default function OutreachWorkspace() {
   const dnc = useSelector((s) => s.dnc.byId[leadId])
   const drafts = useSelector((s) => s.outreach.drafts)
   const statuses = useSelector((s) => s.outreach.statusByKey)
-  const businessSnapshot = useSelector((s) => selectBusinessSnapshot(s, lead.id, activeKind.id))
   const [kind, setKind] = useState('email')
   const tabRefs = useRef({})
   const name = lead ? displayName(lead) : 'Company'
   useDocumentTitle(`Outreach · ${name}`)
+
+  // activeKind must be defined before useSelector that references it
+  const activeKind = OUTREACH_KINDS.find((k) => k.id === kind) || OUTREACH_KINDS[0]
+
+  const businessSnapshot = useSelector((s) => selectBusinessSnapshot(s, lead?.id, activeKind.id))
 
   // Scroll the page to the top when switching leads; the shell handles route changes.
   useEffect(() => {
@@ -83,7 +87,6 @@ export default function OutreachWorkspace() {
   const offeringLabel = offerings[offering] || offering
   const bestLabel = offerings[lead.best_offering] || lead.scores[lead.best_offering]?.label || lead.best_offering
 
-  const activeKind = OUTREACH_KINDS.find((k) => k.id === kind) || OUTREACH_KINDS[0]
   const key = draftKey(lead.id, activeKind.id)
   const draft = drafts[key]
   const status = statuses[key]
