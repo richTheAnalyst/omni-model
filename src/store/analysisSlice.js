@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { serializeError } from '../api/client.js'
 import { analyzeWebsite } from '../api/analysis.js'
+import { buildOfferingsFromServices } from '../config/profile.js'
 
 // statusById[leadId] = { status: 'running' | 'error', startedAt, error }
 const initialState = { statusById: {} }
@@ -10,13 +11,19 @@ export const analyzeLead = createAsyncThunk(
   async ({ leadId }, { getState, signal, rejectWithValue }) => {
     const state = getState()
     const lead = state.leads.entities[leadId]
-    const profile = state.profiles.byId[state.profiles.selectedId]
-    if (!profile) {
+    const baseProfile = state.profiles.byId[state.profiles.selectedId]
+    if (!baseProfile) {
       return rejectWithValue({
         kind: 'config',
         status: 503,
         detail: 'The business profile is not loaded yet. Reload the page.',
       })
+    }
+    const business = state.settings.business
+    const dynamicOfferings = buildOfferingsFromServices(business.service)
+    const profile = {
+      ...baseProfile,
+      offerings: Object.keys(dynamicOfferings).length ? dynamicOfferings : baseProfile.offerings,
     }
     try {
       const result = await analyzeWebsite(

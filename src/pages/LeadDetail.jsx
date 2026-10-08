@@ -13,7 +13,8 @@ import {
 import { BandLabel, ScoreBadge, ScoreRing } from '../components/ScoreBadge.jsx'
 import { EmptyState } from '../components/States.jsx'
 import { industryLabel } from '../config/markets.js'
-import { offeringLabels as offeringLabelMap } from '../config/profile.js'
+import { offeringLabels } from '../config/profile.js'
+import { selectBusiness } from '../store/selectors.js'
 import { useDocumentTitle } from '../hooks/hooks.js'
 import { displayName, formatRating, hostname, safeUrl, telHref } from '../lib/format.js'
 import { offeringEntries } from '../lib/score.js'
@@ -23,17 +24,19 @@ export default function LeadDetail() {
   const { leadId } = useParams()
   const lead = useSelector((s) => selectLeadById(s, leadId))
   const profile = useSelector(selectActiveProfile)
+  const business = useSelector(selectBusiness)
   const dnc = useSelector((s) => Boolean(s.dnc.byId[leadId]))
   const [picked, setPicked] = useState(null)
   const name = lead ? displayName(lead) : 'Company'
   useDocumentTitle(name)
 
   const offerings = useMemo(() => (lead ? offeringEntries(lead) : []), [lead])
+  const offeringLabelsMemo = useMemo(() => offeringLabels(profile, business.service), [profile, business.service])
   const offeringLabels = useMemo(() => {
-    const map = offeringLabelMap(profile)
+    const map = { ...offeringLabelsMemo }
     for (const o of offerings) if (!map[o.key]) map[o.key] = o.label
     return map
-  }, [profile, offerings])
+  }, [offeringLabelsMemo, offerings])
 
   if (!lead) {
     return (

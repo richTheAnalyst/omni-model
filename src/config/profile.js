@@ -17,6 +17,12 @@ const sectors = Object.fromEntries(
   ]),
 )
 
+// Default offerings (fallback when user hasn't entered services yet)
+const DEFAULT_OFFERINGS = {
+  guarding: { label: 'Manned Guarding', description: 'On-site security guards' },
+  k9: { label: 'Canine K9 Security', description: 'Handler and dog patrol teams' },
+}
+
 export const PROFILE = {
   id: 'workspace',
   name: 'Workspace profile',
@@ -27,10 +33,7 @@ export const PROFILE = {
     our_email: '',
     our_phone: '',
   },
-  offerings: {
-    guarding: { label: 'Manned Guarding', description: 'On-site security guards' },
-    k9: { label: 'Canine K9 Security', description: 'Handler and dog patrol teams' },
-  },
+  offerings: DEFAULT_OFFERINGS,
   sectors,
   geography,
   weights: {
@@ -63,7 +66,25 @@ export const PROFILE = {
   },
 }
 
-export function offeringLabels(profile = PROFILE) {
+/** Build offerings object from comma-separated services string (e.g. "Manned Guarding, K9 Security") */
+export function buildOfferingsFromServices(servicesString) {
+  if (!servicesString?.trim()) return {}
+  return servicesString
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .reduce((acc, service) => {
+      const key = service.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '')
+      acc[key] = { label: service, description: service }
+      return acc
+    }, {})
+}
+
+/** Get offering labels from services string (Settings) or fall back to profile defaults */
+export function offeringLabels(profile = PROFILE, servicesString) {
+  if (servicesString?.trim()) {
+    return buildOfferingsFromServices(servicesString)
+  }
   const out = {}
   for (const [key, value] of Object.entries(profile?.offerings || {})) {
     out[key] = typeof value === 'string' ? value : value?.label || key

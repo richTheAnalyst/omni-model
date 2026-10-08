@@ -63,7 +63,7 @@ export default function OutreachWorkspace() {
   }
 
   const offerings = Object.keys(profile.offerings || {}).length
-    ? offeringLabels(profile)
+    ? offeringLabels(profile, business.service)
     : Object.fromEntries(Object.entries(lead.scores).map(([k, v]) => [k, v?.label || k]))
   const offeringKeys = Object.keys(offerings)
   const fromUrl = params.get('offering')

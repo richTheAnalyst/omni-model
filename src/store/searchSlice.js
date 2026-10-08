@@ -7,6 +7,7 @@ import { localDataCleared } from './actions.js'
 import { pickPersisted } from './persist.js'
 import { selectProfile } from './profilesSlice.js'
 import { profileWithSector } from '../config/profile.js'
+import { buildOfferingsFromServices } from '../config/profile.js'
 
 const persisted = pickPersisted('search')
 
@@ -40,7 +41,13 @@ export const runSearch = createAsyncThunk(
         })
       }
       const sectorKey = normalizeSector(params.sector)
-      const profile = profileWithSector(baseProfile, params.sector, sectorKey)
+      const profileWithSectorAdded = profileWithSector(baseProfile, params.sector, sectorKey)
+      const business = getState().settings.business
+      const dynamicOfferings = buildOfferingsFromServices(business.service)
+      const profile = {
+        ...profileWithSectorAdded,
+        offerings: Object.keys(dynamicOfferings).length ? dynamicOfferings : profileWithSectorAdded.offerings,
+      }
       const res = await searchLeads(
         {
           profile,
