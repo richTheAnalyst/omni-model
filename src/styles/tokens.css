@@ -1,0 +1,69 @@
+/* Omni Model design tokens. One place to change the look of the whole product. */
+:root {
+  /* Typography: system stack, no web-font download. Tabular figures for data. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI Variable Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-base: 0.9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.625rem;
+  --fs-2xl: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  --fs-hero: clamp(2.25rem, 1.2rem + 4.2vw, 3.75rem);
+
+  /* Colour: ink + one accent. Green/amber/red are reserved for score meaning. */
+  --ink-950: #0a0f1d;
+  --ink-900: #0f1628;
+  --ink-800: #18213a;
+  --ink-700: #26314f;
+  --ink-500: #5a6585;
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --surface-2: #f8f9fb;
+  --line: #e2e5ec;
+  --line-strong: #c9cfdb;
+  --text: #0f1628;
+  --text-2: #444e66;
+  --text-3: #5f6980;
+  --accent: #2f4bd8;
+  --accent-strong: #2339b0;
+  --accent-soft: #eaeefd;
+  --accent-line: #c5cffa;
+
+  --good: #0b6b3a;
+  --good-bg: #e5f5ec;
+  --good-solid: #17924f;
+  --warn: #85500a;
+  --warn-bg: #fff3dc;
+  --warn-solid: #c77700;
+  --bad: #b42318;
+  --bad-bg: #fdecea;
+  --bad-solid: #d92d20;
+
+  /* Spacing: 4px grid */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.25rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-10: 2.5rem;
+  --s-12: 3rem;
+
+  /* Shape and depth: restrained radii, hairline borders, soft shadows. */
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --shadow-sm: 0 1px 2px rgba(15, 22, 40, 0.06);
+  --shadow-md: 0 4px 16px rgba(15, 22, 40, 0.08);
+  --shadow-pop: 0 10px 30px rgba(15, 22, 40, 0.16);
+  --focus: 0 0 0 3px rgba(47, 75, 216, 0.35);
+
+  --sidebar-w: 248px;
+  --rail-w: 68px;
+  --tabbar-h: 64px;
+  --topbar-h: 56px;
+  --content-max: 1180px;
+}

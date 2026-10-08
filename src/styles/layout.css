@@ -1,0 +1,54 @@
+/* App frame: sidebar (desktop) -> icon rail (tablet) -> top bar + tab bar (mobile). */
+.app { min-height: 100vh; display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); }
+.sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: var(--s-6); padding: var(--s-5) var(--s-4); background: var(--ink-900); color: #d6dcf0; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; font-weight: 650; letter-spacing: -0.01em; }
+.brand-light { color: #fff; }
+.logo-mark { color: var(--accent); border-radius: 8px; }
+.brand-name { font-size: var(--fs-md); }
+.nav { display: grid; gap: var(--s-5); align-content: start; flex: 1; }
+.nav-group { display: grid; gap: 2px; }
+.nav-heading { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.08em; color: #7c88ab; padding: 0 var(--s-3) var(--s-2); }
+.nav-link { display: flex; align-items: center; gap: var(--s-3); padding: 9px var(--s-3); border-radius: var(--r-md); color: #c3cbe6; text-decoration: none; font-weight: 520; }
+.nav-link:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.nav-link.active { background: rgba(125,147,255,0.18); color: #fff; box-shadow: inset 2px 0 0 #8ea1ff; }
+.nav-link:focus-visible, .brand:focus-visible { box-shadow: 0 0 0 3px rgba(159,176,255,0.6); }
+.profile-chip { display: grid; gap: 4px; padding: var(--s-3); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--r-md); }
+.profile-chip .eyebrow { color: #7c88ab; }
+.profile-chip strong { color: #fff; font-weight: 620; }
+.profile-chip .muted { color: #8a95b7; }
+.select-wrap-dark select { background-color: rgba(255,255,255,0.06); color: #fff; border-color: rgba(255,255,255,0.18); }
+.select-wrap-dark option { color: #111; }
+
+.topbar, .tabbar { display: none; }
+.main { min-width: 0; outline: none; }
+.page { width: 100%; max-width: var(--content-max); margin: 0 auto; padding: var(--s-8) var(--s-8) var(--s-12); display: grid; gap: var(--s-6); align-content: start; }
+.page-narrow-wide { max-width: 980px; }
+.page-head { display: grid; gap: var(--s-2); }
+.page-enter { animation: enter 180ms ease-out; }
+@keyframes enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* Tablet: compact icon rail */
+@media (max-width: 1023px) {
+  .app { grid-template-columns: var(--rail-w) minmax(0, 1fr); }
+  .sidebar { padding: var(--s-4) var(--s-2); align-items: center; }
+  .brand-name, .nav-label, .nav-heading, .profile-chip { display: none; }
+  .nav { gap: var(--s-3); justify-items: center; }
+  .nav-group { justify-items: center; }
+  .nav-link { padding: 11px; }
+  .page { padding: var(--s-6) var(--s-6) var(--s-10); }
+}
+
+/* Mobile: top bar + bottom tab bar */
+@media (max-width: 719px) {
+  .app { display: block; padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); }
+  .sidebar { display: none; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 20; height: var(--topbar-h); padding: 0 var(--s-4); background: var(--ink-900); }
+  .topbar-settings { color: #d6dcf0; display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-md); }
+  .topbar-settings.active { background: rgba(125,147,255,0.2); color: #fff; }
+  .tabbar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; position: fixed; inset: auto 0 0 0; z-index: 20; height: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); background: var(--surface); border-top: 1px solid var(--line); }
+  .tab { display: grid; place-items: center; align-content: center; gap: 2px; text-decoration: none; color: var(--text-3); font-size: 0.6875rem; font-weight: 580; min-width: 0; }
+  .tab span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tab.active { color: var(--accent-strong); }
+  .page { padding: var(--s-5) var(--s-4) var(--s-8); gap: var(--s-5); }
+  h1 { font-size: 1.625rem; }
+}
