@@ -41,7 +41,9 @@ export default function OutreachWorkspace() {
   // activeKind must be defined before useSelector that references it
   const activeKind = OUTREACH_KINDS.find((k) => k.id === kind) || OUTREACH_KINDS[0]
 
-  const businessSnapshot = useSelector((s) => selectBusinessSnapshot(s, lead?.id, activeKind.id))
+  // Stable reference for businessSnapshot selector to avoid temporal dead zone
+  const businessSnapshotKey = lead?.id ? `${lead.id}::${activeKind.id}` : ''
+  const businessSnapshot = useSelector((s) => businessSnapshotKey ? selectBusinessSnapshot(s, lead.id, activeKind.id) : null)
 
   // Scroll the page to the top when switching leads; the shell handles route changes.
   useEffect(() => {
