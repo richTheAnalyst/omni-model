@@ -81,6 +81,19 @@ export function sectorOptions(profile = PROFILE) {
     : INDUSTRIES.map((i) => ({ value: i.value, label: i.label }))
 }
 
+export function profileWithSector(baseProfile, sectorLabel, sectorKey) {
+  if (!sectorLabel || !baseProfile) return baseProfile
+  const key = sectorKey || normalizeSector(sectorLabel)
+  if (baseProfile.sectors[key]) return baseProfile
+  return {
+    ...baseProfile,
+    sectors: {
+      ...baseProfile.sectors,
+      [key]: { label: sectorLabel, query: sectorLabel, priority: 1, fit: {} },
+    },
+  }
+}
+
 export function regionOptions(profile = PROFILE, country) {
   const fromProfile = Object.keys(profile?.geography || {})
   if (fromProfile.length) return fromProfile.map((name) => ({ value: name, label: name }))

@@ -9,6 +9,7 @@ import { cityOptions, regionOptions, sectorOptions } from '../config/profile.js'
 import { COPY } from '../config/product.js'
 import { useDocumentTitle } from '../hooks/hooks.js'
 import { normalizeRegion, normalizeSector } from '../lib/format.js'
+import { profileWithSector } from '../config/profile.js'
 import { formChanged, startSearch } from '../store/searchSlice.js'
 import { selectActiveProfile } from '../store/selectors.js'
 
@@ -58,12 +59,11 @@ export default function FindLeads() {
     e.preventDefault()
     setTouched(true)
     if (!valid || searching) return
-    // The API matches region and sector keys exactly, so typed values
-    // are normalized ("Real Estate" -> "real_estate") before sending.
+    // Pass the raw sector (user's original input) to the search thunk.
+    // The thunk will normalize it for the API key but preserve the label.
     const region = normalizeRegion(form.region)
-    const sector = normalizeSector(form.sector)
-    dispatch(formChanged({ region, sector }))
-    const { country, ...query } = { ...form, region, sector }
+    dispatch(formChanged({ region }))
+    const { country, ...query } = { ...form, region }
     dispatch(startSearch({ ...query, profileId: profile.id }))
     navigate('/leads')
   }

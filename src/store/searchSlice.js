@@ -2,10 +2,11 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { serializeError } from '../api/client.js'
 import { searchLeads } from '../api/leads.js'
 import { DEFAULT_COUNTRY } from '../config/markets.js'
-import { cityKey } from '../lib/format.js'
+import { cityKey, normalizeRegion, normalizeSector } from '../lib/format.js'
 import { localDataCleared } from './actions.js'
 import { pickPersisted } from './persist.js'
 import { selectProfile } from './profilesSlice.js'
+import { profileWithSector } from '../config/profile.js'
 
 const persisted = pickPersisted('search')
 
@@ -30,20 +31,22 @@ export const runSearch = createAsyncThunk(
   'search/run',
   async (params, { getState, signal, rejectWithValue }) => {
     try {
-      const profile = getState().profiles.byId[params.profileId]
-      if (!profile) {
+      const baseProfile = getState().profiles.byId[params.profileId]
+      if (!baseProfile) {
         return rejectWithValue({
           kind: 'config',
           status: 503,
           detail: 'The business profile is not loaded yet. Reload the page.',
         })
       }
+      const sectorKey = normalizeSector(params.sector)
+      const profile = profileWithSector(baseProfile, params.sector, sectorKey)
       const res = await searchLeads(
         {
           profile,
-          region: params.region,
+          region: normalizeRegion(params.region),
           city: params.city.trim(),
-          sector: params.sector,
+          sector: sectorKey,
           maxResults: params.maxResults,
         },
         { signal },
