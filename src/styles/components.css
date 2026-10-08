@@ -42,6 +42,27 @@ input[aria-invalid='true'] { border-color: var(--bad); }
 .combo-option.is-active, .combo-option:hover { background: var(--accent-soft); }
 .combo-label { display: block; font-weight: 600; }
 .combo-value { display: block; font-size: var(--fs-xs); color: var(--text-3); font-family: var(--font-mono); }
+
+/* PWA install prompt */
+.pwa-install-prompt {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-pop);
+  animation: slide-up 200ms ease;
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.pwa-install-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.pwa-install-text strong { font-size: var(--fs-sm); color: var(--ink-800); }
+.pwa-install-text span { font-size: var(--fs-xs); color: var(--ink-500); }
+.pwa-install-actions { display: flex; gap: var(--s-2); flex-shrink: 0; }
 .field-hint { font-size: var(--fs-xs); color: var(--text-3); }
 .field-error { font-size: var(--fs-xs); color: var(--bad); font-weight: 560; }
 

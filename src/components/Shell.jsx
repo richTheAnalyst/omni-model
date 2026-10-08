@@ -5,7 +5,7 @@ import { NAV, PRODUCT } from '../config/product.js'
 import { selectActiveProfile } from '../store/selectors.js'
 import { selectProfile } from '../store/profilesSlice.js'
 import ErrorBoundary from './ErrorBoundary.jsx'
-import Icon, { Logo } from './Icon.jsx'
+import { PWAInstallPrompt } from './PWAInstallPrompt.jsx'
 import { PageSkeleton } from './States.jsx'
 
 function ProfileSwitcher() {
@@ -112,6 +112,8 @@ export default function Shell() {
           </Suspense>
         </ErrorBoundary>
       </main>
+
+      <PWAInstallPrompt />
 
       <nav className="tabbar" aria-label="Primary">
         {mobileItems.map((item) => (
