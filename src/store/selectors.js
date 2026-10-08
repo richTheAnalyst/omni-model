@@ -18,6 +18,12 @@ export const selectResultLeads = createSelector([selectResultIds, selectLeadEnti
 /** Sender details exactly as the user typed them in Settings. */
 export const selectBusiness = (state) => state.settings.business
 
+/** Business details as they were when a draft was generated. */
+export const selectBusinessSnapshot = (state, leadId, kind) => {
+  const draft = state.outreach.drafts[`${leadId}::${kind}`]
+  return draft?.businessSnapshot || null
+}
+
 /** Outreach is signed by the user, so name, email, phone and service are required. */
 export const selectBusinessComplete = createSelector([selectBusiness], (b) =>
   Boolean(b.our_name.trim() && b.our_email.trim() && b.our_phone.trim() && b.service.trim()),

@@ -87,6 +87,7 @@ const slice = createSlice({
       .addCase(generateDraft.fulfilled, (state, { payload }) => {
         const key = draftKey(payload.leadId, payload.kind)
         delete state.statusByKey[key]
+        const business = state.settings.business
         state.drafts[key] = {
           leadId: payload.leadId,
           kind: payload.kind,
@@ -94,6 +95,12 @@ const slice = createSlice({
           text: payload.text,
           generatedText: payload.text,
           generatedAt: Date.now(),
+          businessSnapshot: {
+            our_name: business.our_name,
+            our_title: business.our_title,
+            our_email: business.our_email,
+            our_phone: business.our_phone,
+          },
         }
       })
       .addCase(generateDraft.rejected, (state, action) => {

@@ -25,6 +25,7 @@ export default function DraftEditor({
   onRegenerate,
   regenerating,
   staleOffering,
+  staleBusiness,
 }) {
   const [value, setValue] = useState(draft.text)
   const valueRef = useRef(draft.text)
@@ -72,11 +73,19 @@ export default function DraftEditor({
 
   return (
     <div className="draft">
-      {staleOffering ? (
+{staleOffering ? (
         <div className="notice notice-info" role="status">
           <Icon name="info" size={16} />
           <p>
-            This draft was written for <strong>{staleOffering}</strong>. Regenerate it to match the offering you’ve chosen.
+            This draft was written for <strong>{staleOffering}</strong>. Regenerate it to match the offering you've chosen.
+          </p>
+        </div>
+      ) : null}
+      {staleBusiness ? (
+        <div className="notice notice-info" role="status">
+          <Icon name="info" size={16} />
+          <p>
+            This draft was generated with different sender details. <Button variant="ghost" size="sm" onClick={onRegenerate}>Regenerate</Button> to update it.
           </p>
         </div>
       ) : null}

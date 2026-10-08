@@ -18,6 +18,7 @@ import {
   selectActiveProfile,
   selectBusiness,
   selectBusinessComplete,
+  selectBusinessSnapshot,
   selectLeadById,
 } from '../store/selectors.js'
 
@@ -32,6 +33,7 @@ export default function OutreachWorkspace() {
   const dnc = useSelector((s) => s.dnc.byId[leadId])
   const drafts = useSelector((s) => s.outreach.drafts)
   const statuses = useSelector((s) => s.outreach.statusByKey)
+  const businessSnapshot = useSelector((s) => selectBusinessSnapshot(s, lead.id, activeKind.id))
   const [kind, setKind] = useState('email')
   const tabRefs = useRef({})
   const name = lead ? displayName(lead) : 'Company'
@@ -237,6 +239,13 @@ export default function OutreachWorkspace() {
                 onRegenerate={generate}
                 regenerating={loading}
                 staleOffering={draft.offering !== offering ? offerings[draft.offering] || draft.offering : ''}
+                staleBusiness={
+                  businessSnapshot &&
+                  (businessSnapshot.our_name !== business.our_name ||
+                    businessSnapshot.our_title !== business.our_title ||
+                    businessSnapshot.our_email !== business.our_email ||
+                    businessSnapshot.our_phone !== business.our_phone)
+                }
               />
             ) : (
               <>
