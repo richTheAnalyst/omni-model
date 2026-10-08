@@ -6,6 +6,7 @@ import { selectActiveProfile } from '../store/selectors.js'
 import { selectProfile } from '../store/profilesSlice.js'
 import ErrorBoundary from './ErrorBoundary.jsx'
 import { PWAInstallPrompt } from './PWAInstallPrompt.jsx'
+import Icon, { Logo } from './Icon.jsx'
 import { PageSkeleton } from './States.jsx'
 
 function ProfileSwitcher() {
