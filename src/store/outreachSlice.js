@@ -55,7 +55,7 @@ export const generateDraft = createAsyncThunk(
         },
         { signal },
       )
-      return { leadId, kind, offering, text: res.text, leadName: lead.name }
+      return { leadId, kind, offering, text: res.text, leadName: lead.name, business }
     } catch (err) {
       return rejectWithValue(serializeError(err))
     }
@@ -93,7 +93,7 @@ const slice = createSlice({
       .addCase(generateDraft.fulfilled, (state, { payload }) => {
         const key = draftKey(payload.leadId, payload.kind)
         delete state.statusByKey[key]
-        const business = state.settings.business
+        const business = payload.business
         state.drafts[key] = {
           leadId: payload.leadId,
           kind: payload.kind,
