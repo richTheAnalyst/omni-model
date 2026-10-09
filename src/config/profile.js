@@ -82,11 +82,11 @@ export function buildOfferingsFromServices(servicesString) {
 
 /** Get offering labels from services string (Settings) or fall back to profile defaults */
 export function offeringLabels(profile = PROFILE, servicesString) {
-  if (servicesString?.trim()) {
-    return buildOfferingsFromServices(servicesString)
-  }
+  const source = servicesString?.trim()
+    ? buildOfferingsFromServices(servicesString)
+    : profile?.offerings || {}
   const out = {}
-  for (const [key, value] of Object.entries(profile?.offerings || {})) {
+  for (const [key, value] of Object.entries(source)) {
     out[key] = typeof value === 'string' ? value : value?.label || key
   }
   return out
