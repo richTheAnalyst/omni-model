@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { businessSaved } from '../store/settingsSlice.js'
-import { selectBusiness } from '../store/selectors.js'
+import { businessSaved, runSuggestFit } from '../store/settingsSlice.js'
+import { selectBusiness, selectFitStatus, selectFitFilled, selectFitError } from '../store/selectors.js'
 import Button from './Button.jsx'
 import { TextField } from './Fields.jsx'
 
@@ -31,6 +31,9 @@ const FIELDS = [
 export default function BusinessForm({ heading = 'Business profile', intro, submitLabel = 'Save changes', onSaved }) {
   const dispatch = useDispatch()
   const current = useSelector(selectBusiness)
+  const fitStatus = useSelector(selectFitStatus)
+  const fitFilled = useSelector(selectFitFilled)
+  const fitError = useSelector(selectFitError)
   const [values, setValues] = useState(() => ({ ...current }))
   const [saved, setSaved] = useState(false)
   const [touched, setTouched] = useState(false)
@@ -61,6 +64,9 @@ export default function BusinessForm({ heading = 'Business profile', intro, subm
     setValues(trimmed)
     setSaved(true)
     onSaved?.()
+    // Ask the AI how well each offering suits each industry, so /search
+    // returns meaningful best-fit scores instead of all-equal scores.
+    dispatch(runSuggestFit({ profile: null, sectors: null }))
   }
 
   return (
@@ -97,6 +103,9 @@ export default function BusinessForm({ heading = 'Business profile', intro, subm
         </Button>
         <span className="muted small" role="status" aria-live="polite">
           {saved ? 'Saved on this device.' : dirty ? 'You have unsaved changes.' : ''}
+          {fitStatus === 'loading' ? ' · Asking the AI how your services fit each industry…' : ''}
+          {fitStatus === 'succeeded' ? ` · Fit scores ready (${fitFilled} industries)` : ''}
+          {fitStatus === 'failed' ? ' · Could not get AI fit suggestions' : ''}
         </span>
       </div>
     </form>

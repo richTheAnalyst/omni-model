@@ -18,6 +18,15 @@ export const selectResultLeads = createSelector([selectResultIds, selectLeadEnti
 /** Sender details exactly as the user typed them in Settings. */
 export const selectBusiness = (state) => state.settings.business
 
+/** AI-suggested fit scores: { sectorKey: { offeringKey: 0..1 } } */
+export const selectFitScores = (state) => state.settings.fitScores || {}
+
+export const selectFitStatus = (state) => state.settings.fitStatus
+
+export const selectFitFilled = (state) => state.settings.fitFilled
+
+export const selectFitError = (state) => state.settings.fitError
+
 /** Business details as they were when a draft was generated. */
 export const selectBusinessSnapshot = (state, leadId, kind) => {
   const draft = state.outreach.drafts[`${leadId}::${kind}`]

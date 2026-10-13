@@ -36,7 +36,10 @@ attachPersistence(store, {
     s.leads,
     s.outreach.drafts,
     s.dnc.byId,
-    s.settings,
+    s.settings.business,
+    s.settings.welcomeSeen,
+    s.settings.fitScores,
+    s.settings.fitStatus,
     s.activity.items,
   ],
   serialize: (s) => ({
@@ -45,7 +48,11 @@ attachPersistence(store, {
     leads: leadsToPersist(s),
     outreach: { drafts: s.outreach.drafts },
     dnc: { byId: s.dnc.byId },
-    settings: { businessDetails: s.settings.business, welcomeSeen: s.settings.welcomeSeen },
+    settings: {
+      businessDetails: s.settings.business,
+      welcomeSeen: s.settings.welcomeSeen,
+      fitScores: s.settings.fitScores,
+    },
     activity: { items: s.activity.items },
   }),
 })
