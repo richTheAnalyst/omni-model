@@ -17,6 +17,7 @@ import { offeringLabels } from '../config/profile.js'
 import { selectBusiness } from '../store/selectors.js'
 import { useDocumentTitle } from '../hooks/hooks.js'
 import { displayName, formatRating, hostname, safeUrl, telHref } from '../lib/format.js'
+import { badgeText, ownershipOf } from '../lib/ownership.js'
 import { offeringEntries } from '../lib/score.js'
 import { selectActiveProfile, selectLeadById } from '../store/selectors.js'
 
@@ -30,7 +31,6 @@ export default function LeadDetail() {
   const name = lead ? displayName(lead) : 'Company'
   useDocumentTitle(name)
 
-  const offerings = useMemo(() => (lead ? offeringEntries(lead) : []), [lead])
   const offeringLabelsMemo = useMemo(() => offeringLabels(profile, business.service), [profile, business.service])
   const offeringLabelsMap = useMemo(() => {
     const map = { ...offeringLabelsMemo }
