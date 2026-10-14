@@ -42,6 +42,7 @@ export const INDUSTRIES = [
   { value: 'real_estate', label: 'Real estate' },
   { value: 'retail', label: 'Retail' },
   { value: 'telecom', label: 'Telecoms' },
+  { value: 'government', label: 'Government offices & agencies' },
 ]
 
 export const DEFAULT_COUNTRY = COUNTRIES[0].name
