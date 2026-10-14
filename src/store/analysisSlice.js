@@ -35,6 +35,7 @@ export const analyzeLead = createAsyncThunk(
           city: lead.city,
           ...(lead.name ? { name: lead.name } : {}),
           ...(lead.review_count != null ? { review_count: lead.review_count } : {}),
+          ...(Array.isArray(lead.types) ? { types: lead.types } : {}),
         },
         { signal },
       )
