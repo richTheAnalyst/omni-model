@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { LinkButton } from '../components/Button.jsx'
 import Button from '../components/Button.jsx'

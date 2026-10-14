@@ -1,5 +1,5 @@
+import { memo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { displayName, formatRating, hostname, safeUrl, telHref } from '../lib/format.js'
 import { bestEntry } from '../lib/score.js'
 import Icon from './Icon.jsx'
 import { badgeText, ownershipOf } from '../lib/ownership.js'
