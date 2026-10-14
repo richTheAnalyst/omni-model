@@ -1,5 +1,5 @@
+import { countByOwnership, filterLeads, ownershipOf } from '../lib/ownership.js'
 import { useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { LinkButton } from '../components/Button.jsx'
 import Button from '../components/Button.jsx'
 import { LeadCards, LeadsTable } from '../components/LeadList.jsx'
@@ -9,7 +9,6 @@ import { industryLabel } from '../config/markets.js'
 import { COPY } from '../config/product.js'
 import { useDocumentTitle, useMediaQuery } from '../hooks/hooks.js'
 import { getBand, toPercent, bestEntry } from '../lib/score.js'
-import { countByOwnership, filterLeads, ownershipOf } from '../lib/ownership.js'
 import { runSearch } from '../store/searchSlice.js'
 import { selectActiveProfile, selectDncById, selectResultLeads } from '../store/selectors.js'
 
@@ -20,7 +19,6 @@ const FILTERS = [
   { id: 'low', label: 'Low fit' },
 ]
 
-import { countByOwnership, filterLeads, ownershipOf } from '../lib/ownership.js'
 const OWNER_FILTERS = [
   { id: 'all', label: 'All' },
   { id: 'government', label: 'Government & public sector' },
@@ -40,3 +38,13 @@ export default function Leads() {
   const isMobile = useMediaQuery('(max-width: 719px)')
   const [filter, setFilter] = useState('all')
   const [ownerFilter, setOwnerFilter] = useState('all')
+  const ownerCounts = useMemo(() => countByOwnership(leads), [leads])
+
+}
+
+
+
+
+
+
+

@@ -53,8 +53,18 @@ export async function analyzeWebsite(payload, { signal } = {}) {
       best_offering: res?.best_offering || '',
       scores: res?.scores && typeof res.scores === 'object' ? res.scores : {},
       warning: typeof res?.warning === 'string' ? res.warning : '',
+      ownership: res?.ownership || 'non_government',
+      ownership_confidence: res?.ownership_confidence || 'assumed',
+      ownership_source: res?.ownership_source || 'none',
+      ownership_reason: typeof res?.ownership_reason === 'string' ? res.ownership_reason : '',
+      types: Array.isArray(res?.types) ? res.types : (Array.isArray(payload.types) ? payload.types : []),
     }
   } finally {
     release()
   }
 }
+
+
+
+
+
