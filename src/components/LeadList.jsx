@@ -2,14 +2,24 @@ import { memo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { bestEntry } from '../lib/score.js'
 import Icon from './Icon.jsx'
+import { displayName, formatRating, hostname, safeUrl, telHref } from '../lib/format.js'
 import { badgeText, ownershipOf } from '../lib/ownership.js'
 import { ScoreBadge } from './ScoreBadge.jsx'
 
+function OwnerTag({ lead }) {
+  const gov = ownershipOf(lead) === 'government'
+  return (
+    <span className={`tag ${gov ? 'tag-accent' : ''}`} title={lead.ownership_reason || undefined}>
+      {badgeText(lead)}
+    </span>
+  )
+}
+
 function Flags({ lead, dnc }) {
   const analyzed = Boolean(lead.analysis)
-  if (!dnc && !analyzed) return null
   return (
     <span className="flags">
+      <OwnerTag lead={lead} />
       {dnc ? (
         <span className="tag tag-bad">
           <Icon name="block" size={12} /> Do not contact

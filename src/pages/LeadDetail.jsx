@@ -30,6 +30,7 @@ export default function LeadDetail() {
   const [picked, setPicked] = useState(null)
   const name = lead ? displayName(lead) : 'Company'
   useDocumentTitle(name)
+  const offerings = useMemo(() => (lead ? offeringEntries(lead) : []), [lead])
 
   const offeringLabelsMemo = useMemo(() => offeringLabels(profile, business.service), [profile, business.service])
   const offeringLabelsMap = useMemo(() => {
@@ -76,6 +77,13 @@ export default function LeadDetail() {
             {[lead.city, sectorLabel].filter(Boolean).join(' · ')}
           </p>
           {lead.address ? <p className="muted">{lead.address}</p> : null}
+           <p className="ownership-line">
+            <span className={`tag ${ownershipOf(lead) === 'government' ? 'tag-accent' : ''}`}>{badgeText(lead)}</span>
+            {lead.ownership_reason ? <span className="muted small"> {lead.ownership_reason}</span> : null}
+            {lead.ownership_confidence === 'assumed' && lead.website ? (
+              <span className="muted small"> Analyze the website to verify.</span>
+            ) : null}
+          </p>
           <ul className="contact-line">
             {tel ? (
               <li>

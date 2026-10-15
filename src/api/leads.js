@@ -30,6 +30,11 @@ export function normalizeLead(raw) {
     sector: raw?.sector || '',
     best_offering: best,
     scores,
+    types: Array.isArray(raw?.types) ? raw.types.filter((t) => typeof t === 'string').slice(0, 6) : [],
+    ownership: raw?.ownership === 'government' ? 'government' : 'non_government',
+    ownership_confidence: ['high', 'ai', 'assumed'].includes(raw?.ownership_confidence) ? raw.ownership_confidence : 'assumed',
+    ownership_source: typeof raw?.ownership_source === 'string' ? raw.ownership_source : 'none',
+    ownership_reason: typeof raw?.ownership_reason === 'string' ? raw.ownership_reason : '',
     analysis: null,
   }
 }

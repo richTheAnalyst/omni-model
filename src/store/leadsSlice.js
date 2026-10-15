@@ -29,11 +29,21 @@ const slice = createSlice({
           }
           // Refresh contact details but never throw away a website analysis.
           const keepScores = Boolean(existing.analysis)
+          // A search only guesses ownership; never replace an AI-checked label with that guess.
+          const keepOwner = existing.ownership_confidence === 'ai' && incoming.ownership_confidence === 'assumed'
           state.entities[incoming.id] = {
             ...incoming,
             analysis: existing.analysis,
             scores: keepScores ? existing.scores : incoming.scores,
             best_offering: keepScores ? existing.best_offering : incoming.best_offering,
+            ...(keepOwner
+              ? {
+                  ownership: existing.ownership,
+                  ownership_confidence: existing.ownership_confidence,
+                  ownership_source: existing.ownership_source,
+                  ownership_reason: existing.ownership_reason,
+                }
+              : {}),
           }
         }
       })
@@ -53,6 +63,13 @@ const slice = createSlice({
           // The very first (estimated) scores are kept so before/after stays visible.
           before: lead.analysis?.before ?? { best_offering: lead.best_offering, scores: lead.scores },
         }
+        // Take the analysis result's ownership unless it is only a guess (never replace a stronger label with a weaker one).
+        if (result.ownership_confidence && result.ownership_confidence !== 'assumed') {
+          lead.ownership = result.ownership
+          lead.ownership_confidence = result.ownership_confidence
+          lead.ownership_source = result.ownership_source
+          lead.ownership_reason = result.ownership_reason
+        }
         if (Object.keys(result.scores).length > 0) {
           lead.scores = result.scores
           lead.best_offering = result.best_offering in result.scores ? result.best_offering : lead.best_offering
@@ -62,4 +79,3 @@ const slice = createSlice({
 })
 
 export default slice.reducer
-
