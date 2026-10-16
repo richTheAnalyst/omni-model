@@ -12,7 +12,6 @@ import { buildOfferingsFromServices } from '../config/profile.js'
 const persisted = pickPersisted('search')
 
 const emptyForm = { country: DEFAULT_COUNTRY, region: '', city: '', sector: '', maxResults: 10 }
-
 const initialState = {
   form: { ...emptyForm, ...(persisted.form || {}) },
   status: 'idle', // idle | loading | succeeded | failed

@@ -43,9 +43,13 @@ export default function FindLeads() {
   const setRegion = (region) => {
     dispatch(formChanged({ region, city: '' }))
   }
-  const setMax = (raw) => {
+    const setMax = (raw) => {
+    if (String(raw).trim() === '') {
+      dispatch(formChanged({ maxResults: null }))
+      return
+    }
     const n = Math.round(Number(raw))
-    dispatch(formChanged({ maxResults: Number.isFinite(n) ? Math.min(MAX_LIMIT, Math.max(1, n)) : 10 }))
+    dispatch(formChanged({ maxResults: Number.isFinite(n) ? Math.min(MAX_LIMIT, Math.max(1, n)) : null }))
   }
 
   const errors = {
@@ -119,16 +123,17 @@ export default function FindLeads() {
               hint={touched && errors.sector ? errors.sector : undefined}
             />
 
-            <TextField
-              label="Maximum results"
+           <TextField
+              label="Maximum results (optional)"
               type="number"
               inputMode="numeric"
               min={1}
               max={MAX_LIMIT}
               step={1}
-              value={form.maxResults}
+              placeholder="All available"
+              value={form.maxResults ?? ''}
               onChange={setMax}
-              hint={`From 1 to ${MAX_LIMIT} companies.`}
+              hint={`Leave empty to get everything found (up to ${MAX_LIMIT}), or enter a number from 1 to ${MAX_LIMIT}.`}
             />
           </div>
 
