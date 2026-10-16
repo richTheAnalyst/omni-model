@@ -13,7 +13,7 @@ import { profileWithSector } from '../config/profile.js'
 import { formChanged, startSearch } from '../store/searchSlice.js'
 import { selectActiveProfile } from '../store/selectors.js'
 
-const MAX_LIMIT = 20
+const MAX_LIMIT = 60
 
 export default function FindLeads() {
   useDocumentTitle('Find Leads')
