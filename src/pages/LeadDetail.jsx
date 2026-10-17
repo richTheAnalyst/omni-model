@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import { buttonClass, LinkButton } from '../components/Button.jsx'
+import Icon from '../components/Icon.jsx'
 import {
   AnalysisPanel,
   BreakdownPanel,

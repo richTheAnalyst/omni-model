@@ -4,6 +4,7 @@ import { bestEntry } from '../lib/score.js'
 import Icon from './Icon.jsx'
 import { displayName, formatRating, hostname, safeUrl, telHref } from '../lib/format.js'
 import { badgeText, ownershipOf } from '../lib/ownership.js'
+import { directionsUrl, earthUrl } from '../lib/geo.js'
 import { ScoreBadge } from './ScoreBadge.jsx'
 
 function OwnerTag({ lead }) {
@@ -44,7 +45,19 @@ function ExternalSite({ url }) {
     </a>
   )
 }
-
+function MapLinks({ lead }) {
+  const stop = (e) => e.stopPropagation()
+  return (
+    <span className="lead-card-links">
+      <a href={earthUrl(lead)} target="_blank" rel="noopener noreferrer" className="chip-link" onClick={stop}>
+        <Icon name="globe" size={13} /> Earth
+      </a>
+      <a href={directionsUrl(lead)} target="_blank" rel="noopener noreferrer" className="chip-link" onClick={stop}>
+        <Icon name="arrow" size={13} /> Directions
+      </a>
+    </span>
+  )
+}
 const Row = memo(function Row({ lead, dnc }) {
   const navigate = useNavigate()
   const best = bestEntry(lead)
@@ -79,6 +92,12 @@ const Row = memo(function Row({ lead, dnc }) {
       <td>
         <ExternalSite url={lead.website} />
       </td>
+            <td>
+        <ExternalSite url={lead.website} />
+      </td>
+      <td>
+        <MapLinks lead={lead} />
+      </td>
     </tr>
   )
 })
@@ -96,6 +115,8 @@ export function LeadsTable({ leads, dncById }) {
             <th scope="col">Rating</th>
             <th scope="col">Phone</th>
             <th scope="col">Website</th>
+            <th scope="col">Website</th>
+            <th scope="col">Map</th>
           </tr>
         </thead>
         <tbody>
@@ -143,6 +164,7 @@ const Card = memo(function Card({ lead, dnc }) {
             </a>
           ) : null}
         </span>
+        <MapLinks lead={lead} />
       </div>
     </li>
   )
