@@ -31,6 +31,8 @@ export function normalizeLead(raw) {
     best_offering: best,
     scores,
     types: Array.isArray(raw?.types) ? raw.types.filter((t) => typeof t === 'string').slice(0, 6) : [],
+    lat: typeof raw?.lat === 'number' ? raw.lat : null,
+    lng: typeof raw?.lng === 'number' ? raw.lng : null,
     ownership: raw?.ownership === 'government' ? 'government' : 'non_government',
     ownership_confidence: ['high', 'ai', 'assumed'].includes(raw?.ownership_confidence) ? raw.ownership_confidence : 'assumed',
     ownership_source: typeof raw?.ownership_source === 'string' ? raw.ownership_source : 'none',
@@ -42,8 +44,7 @@ export function normalizeLead(raw) {
 export async function searchLeads({ profile, region, city, sector, maxResults }, { signal } = {}) {
   const res = await request('/search', {
     method: 'POST',
-    body: { profile, region, city, sector, max_results: maxResults },
-    timeoutMs: 60_000,
+    body: { profile, region, city, sector, max_results: maxResults, shuffle: true },    timeoutMs: 60_000,
     signal,
   })
   const leads = Array.isArray(res?.leads) ? res.leads.map(normalizeLead) : []

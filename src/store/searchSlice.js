@@ -25,7 +25,6 @@ export function queryKey(p) {
   return [p.profileId, p.region, cityKey(p.city), p.sector, p.maxResults].join('|')
 }
 
-const REUSE_WINDOW_MS = 60_000
 
 export const runSearch = createAsyncThunk(
   'search/run',
@@ -65,21 +64,9 @@ export const runSearch = createAsyncThunk(
   { condition: (_, { getState }) => getState().search.status !== 'loading' },
 )
 
-/**
- * Starts a search unless the same one just finished (the server also caches
- * repeats, but there is no reason to spend a call). Returns what happened.
- */
+/** Starts a search. Each search reshuffles the results; the server caches Google's results, so repeats cost nothing extra. */
 export const startSearch = (params) => (dispatch, getState) => {
-  const { lastQuery, status, resultIds } = getState().search
-  if (status === 'loading') return 'busy'
-  if (
-    lastQuery &&
-    resultIds.length > 0 &&
-    lastQuery.key === queryKey(params) &&
-    Date.now() - lastQuery.at < REUSE_WINDOW_MS
-  ) {
-    return 'reused'
-  }
+  if (getState().search.status === 'loading') return 'busy'
   dispatch(runSearch(params))
   return 'started'
 }

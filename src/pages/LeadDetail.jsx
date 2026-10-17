@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
-import { LinkButton } from '../components/Button.jsx'
-import Icon from '../components/Icon.jsx'
+import { buttonClass, LinkButton } from '../components/Button.jsx'
 import {
   AnalysisPanel,
   BreakdownPanel,
@@ -17,6 +16,7 @@ import { offeringLabels } from '../config/profile.js'
 import { selectBusiness } from '../store/selectors.js'
 import { useDocumentTitle } from '../hooks/hooks.js'
 import { displayName, formatRating, hostname, safeUrl, telHref } from '../lib/format.js'
+import { directionsUrl, earthUrl, mapsUrl } from '../lib/geo.js'
 import { badgeText, ownershipOf } from '../lib/ownership.js'
 import { offeringEntries } from '../lib/score.js'
 import { selectActiveProfile, selectLeadById } from '../store/selectors.js'
@@ -113,6 +113,20 @@ export default function LeadDetail() {
               )}
             </li>
           </ul>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.75rem' }}>
+            <a className={buttonClass('secondary', 'sm')} href={earthUrl(lead)} target="_blank" rel="noopener noreferrer">
+              <Icon name="globe" size={16} />
+              <span>View in Google Earth</span>
+            </a>
+            <a className={buttonClass('primary', 'sm')} href={directionsUrl(lead)} target="_blank" rel="noopener noreferrer">
+              <Icon name="arrow" size={16} />
+              <span>Get directions</span>
+            </a>
+            <a className={buttonClass('secondary', 'sm')} href={mapsUrl(lead)} target="_blank" rel="noopener noreferrer">
+              <Icon name="external" size={16} />
+              <span>Open in Google Maps</span>
+            </a>
+          </div>
         </div>
         {dnc ? (
           <span className="tag tag-bad tag-lg">
