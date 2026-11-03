@@ -7,15 +7,14 @@ const isPlaceId = (id) => typeof id === 'string' && id.startsWith('ChIJ')
 
 /** Opens Google Earth (web) looking at the place. */
 export function earthUrl(lead) {
-  if (hasCoords(lead)) return `https://earth.google.com/web/@${lead.lat},${lead.lng},0a,600d,35y,0h,0t,0r`
-  return `https://earth.google.com/web/search/${enc(placeText(lead))}`
+  if (placeText(lead)) return `https://earth.google.com/web/search/${enc(placeText(lead))}`
+  if (hasCoords(lead)) return `https://earth.google.com/web/search/${lead.lat},${lead.lng}`
+  return 'https://earth.google.com/web/'
 }
 
 /** Opens Google Maps with directions to the place. With no origin, Google uses the visitor's own location. */
 export function directionsUrl(lead) {
-  const destination = hasCoords(lead) ? `${lead.lat},${lead.lng}` : placeText(lead)
-  const placeId = isPlaceId(lead?.id) ? `&destination_place_id=${enc(lead.id)}` : ''
-  return `https://www.google.com/maps/dir/?api=1&destination=${enc(destination)}${placeId}&travelmode=driving`
+  return mapsUrl(lead)
 }
 
 /** Opens the place on Google Maps. */

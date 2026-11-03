@@ -128,6 +128,7 @@ export const NAV = [
       { to: '/', label: 'Home', short: 'Home', icon: 'home', end: true },
       { to: '/find', label: 'Find Leads', short: 'Find', icon: 'search' },
       { to: '/leads', label: 'Leads', short: 'Leads', icon: 'list' },
+      { to: '/pipeline', label: 'Pipeline', short: 'Pipeline', icon: 'check' },
       { to: '/outreach', label: 'Outreach', short: 'Outreach', icon: 'mail' },
     ],
   },

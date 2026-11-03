@@ -6,6 +6,7 @@ import { prettifyKey, timeAgo } from '../lib/format.js'
 import { toPercent } from '../lib/score.js'
 import { cancelAnalysis, errorDismissed, startAnalysis } from '../store/analysisSlice.js'
 import { clearedDoNotContact, markedDoNotContact } from '../store/dncSlice.js'
+import { setTrackedDnc } from '../store/trackingSlice.js'
 import Button from './Button.jsx'
 import Icon from './Icon.jsx'
 import { ScoreBadge } from './ScoreBadge.jsx'
@@ -272,9 +273,13 @@ export function AnalysisPanel({ lead, displayName }) {
 
 export function DncControl({ lead, displayName }) {
   const dispatch = useDispatch()
-  const on = useSelector((s) => Boolean(s.dnc.byId[lead.id]))
-  const toggle = () =>
+  const saved = useSelector((s) => s.tracking.byPlaceId[lead.id])
+  const on = useSelector((s) => Boolean(s.dnc.byId[lead.id]) || Boolean(s.tracking.byPlaceId[lead.id]?.do_not_contact))
+  const toggle = () => {
     dispatch(on ? clearedDoNotContact(lead.id) : markedDoNotContact({ id: lead.id, name: displayName }))
+    // A saved lead keeps the flag on the server too, where it also blocks logging calls and messages.
+    if (saved) dispatch(setTrackedDnc({ placeId: lead.id, value: !on }))
+  }
   return (
     <section className={`panel panel-flat dnc ${on ? 'is-on' : ''}`} aria-labelledby="dnc-title">
       <div className="dnc-row">
@@ -299,4 +304,3 @@ export function DncControl({ lead, displayName }) {
     </section>
   )
 }
-

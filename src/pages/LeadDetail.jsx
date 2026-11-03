@@ -10,6 +10,7 @@ import {
   ScoreCompare,
   SignalsPanel,
 } from '../components/LeadParts.jsx'
+import { StatusTag, TrackingPanel } from '../components/TrackingParts.jsx'
 import { BandLabel, ScoreBadge, ScoreRing } from '../components/ScoreBadge.jsx'
 import { EmptyState } from '../components/States.jsx'
 import { industryLabel } from '../config/markets.js'
@@ -27,7 +28,8 @@ export default function LeadDetail() {
   const lead = useSelector((s) => selectLeadById(s, leadId))
   const profile = useSelector(selectActiveProfile)
   const business = useSelector(selectBusiness)
-  const dnc = useSelector((s) => Boolean(s.dnc.byId[leadId]))
+  const tracked = useSelector((s) => s.tracking.byPlaceId[leadId])
+  const dnc = useSelector((s) => Boolean(s.dnc.byId[leadId]) || Boolean(s.tracking.byPlaceId[leadId]?.do_not_contact))
   const [picked, setPicked] = useState(null)
   const name = lead ? displayName(lead) : 'Company'
   useDocumentTitle(name)
@@ -129,11 +131,14 @@ export default function LeadDetail() {
             </a>
           </div>
         </div>
-        {dnc ? (
-          <span className="tag tag-bad tag-lg">
-            <Icon name="block" size={14} /> Do not contact
-          </span>
-        ) : null}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'flex-start' }}>
+          <StatusTag tracked={tracked} />
+          {dnc ? (
+            <span className="tag tag-bad tag-lg">
+              <Icon name="block" size={14} /> Do not contact
+            </span>
+          ) : null}
+        </div>
       </header>
 
       <div className="detail-grid">
@@ -190,6 +195,7 @@ export default function LeadDetail() {
         </div>
 
         <aside className="detail-side">
+          <TrackingPanel lead={lead} />
           <AnalysisPanel lead={lead} displayName={name} />
 
           <section className="panel panel-flat" aria-labelledby="out-title">

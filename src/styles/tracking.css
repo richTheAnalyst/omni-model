@@ -1,0 +1,32 @@
+/* Saved-lead tracking: status tags, the tracking card on the lead page, and the Pipeline list. */
+.tag-good { background: var(--good-bg); border-color: #b9e3cb; color: var(--good); }
+
+.link-button { background: none; border: 0; padding: 0; color: var(--accent-strong); text-decoration: underline; cursor: pointer; font-size: inherit; }
+.link-button:hover:not(:disabled) { color: var(--accent); }
+.link-button:disabled { color: var(--text-3); cursor: not-allowed; text-decoration: none; }
+
+.track { display: grid; gap: var(--s-4); }
+.track-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.track-block { display: grid; gap: var(--s-2); }
+.track-inline { display: flex; gap: var(--s-2); align-items: flex-end; flex-wrap: wrap; }
+.track-inline .field { flex: 1 1 140px; }
+.track-inline input[type='date'] { width: auto; min-height: 36px; padding: 6px 10px; border: 1px solid var(--line-strong); border-radius: var(--r-md); background: var(--surface); }
+.track-currency { flex: 0 1 100px; }
+.track-form { padding: var(--s-3); border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); }
+.track-due { font-size: var(--fs-sm); color: var(--text-2); }
+.track-due.is-overdue { color: var(--bad); font-weight: 620; }
+.track-remove { padding-top: var(--s-3); border-top: 1px solid var(--line); }
+.filter:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.track-history { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); max-height: 360px; overflow-y: auto; }
+.track-history li { display: grid; gap: 2px; padding-left: var(--s-3); border-left: 2px solid var(--line-strong); }
+.track-what { font-weight: 620; font-size: var(--fs-sm); }
+.track-note { font-size: var(--fs-sm); color: var(--text-2); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.pipeline-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+.pipeline-item { display: flex; justify-content: space-between; gap: var(--s-4); flex-wrap: wrap; padding: var(--s-4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.pipeline-main { display: grid; gap: 4px; flex: 1 1 280px; min-width: 0; text-decoration: none; color: inherit; }
+.pipeline-top { display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap; }
+.pipeline-note { font-size: var(--fs-sm); color: var(--text-2); }
+.pipeline-meta { display: grid; gap: 4px; align-content: start; justify-items: end; text-align: right; }
+@media (max-width: 719px) { .pipeline-meta { justify-items: start; text-align: left; } }

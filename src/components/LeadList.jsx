@@ -1,5 +1,7 @@
 import { memo } from 'react'
+import { useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
+import { StatusTag } from './TrackingParts.jsx'
 import { bestEntry } from '../lib/score.js'
 import Icon from './Icon.jsx'
 import { displayName, formatRating, hostname, safeUrl, telHref } from '../lib/format.js'
@@ -18,9 +20,11 @@ function OwnerTag({ lead }) {
 
 function Flags({ lead, dnc }) {
   const analyzed = Boolean(lead.analysis)
+  const tracked = useSelector((s) => s.tracking.byPlaceId[lead.id])
   return (
     <span className="flags">
       <OwnerTag lead={lead} />
+      <StatusTag tracked={tracked} />
       {dnc ? (
         <span className="tag tag-bad">
           <Icon name="block" size={12} /> Do not contact

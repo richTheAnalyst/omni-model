@@ -1,6 +1,8 @@
 // The only place in the app that calls fetch(). Everything else goes through
 // the service modules in this folder.
 
+
+import { getAccessToken } from './auth.js'
 const BASE = String(import.meta.env.VITE_API_URL || '').replace(/\/+$/, '')
 const KEY = import.meta.env.VITE_API_KEY || ''
 
@@ -73,6 +75,8 @@ async function execute(path, { method, body, timeoutMs, signal, auth, responseTy
   try {
     const headers = {}
     if (auth) headers['X-API-Key'] = KEY
+    const token = await getAccessToken() // null for guests
+    if (token) headers.Authorization = `Bearer ${token}`
     if (body !== undefined) headers['Content-Type'] = 'application/json'
 
     const res = await fetch(BASE + path, {

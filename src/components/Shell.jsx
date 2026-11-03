@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { accountsEnabled } from '../api/auth.js'
 import { NAV, PRODUCT } from '../config/product.js'
 import { selectActiveProfile } from '../store/selectors.js'
 import { selectProfile } from '../store/profilesSlice.js'
@@ -50,6 +51,22 @@ function ProfileSwitcher() {
   )
 }
 
+function AccountChip() {
+  const status = useSelector((s) => s.account.status)
+  const user = useSelector((s) => s.account.user)
+  if (!accountsEnabled || status === 'checking') return null
+  const signedIn = status === 'signedIn'
+  return (
+    <div className="profile-chip">
+      <span className="eyebrow">{signedIn ? 'Signed in' : 'Guest'}</span>
+      <strong>{signedIn ? user?.email || user?.name || 'Your account' : 'Saved in this browser only'}</strong>
+      <Link to="/account" style={{ color: '#b9c3e6', fontSize: 13 }}>
+        {signedIn ? 'Manage account' : 'Sign in or create an account'}
+      </Link>
+    </div>
+  )
+}
+
 export default function Shell() {
   const { pathname } = useLocation()
   const mainRef = useRef(null)
@@ -92,6 +109,7 @@ export default function Shell() {
           ))}
         </nav>
         <ProfileSwitcher />
+        <AccountChip />
       </aside>
 
       <header className="topbar">
@@ -99,6 +117,11 @@ export default function Shell() {
           <Logo size={26} />
           <span className="brand-name">{PRODUCT.name}</span>
         </Link>
+        {accountsEnabled ? (
+          <NavLink to="/account" className="topbar-settings" aria-label="Account" style={{ width: 'auto', padding: '0 10px', fontSize: 14 }}>
+            Account
+          </NavLink>
+        ) : null}
         <NavLink to="/settings" className="topbar-settings" aria-label="Settings">
           <Icon name="settings" size={20} />
         </NavLink>
