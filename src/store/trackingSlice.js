@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, isFulfilled, isPending, isRejected } from '@reduxjs/toolkit'
 import * as api from '../api/tracking.js'
 import { serializeError } from '../api/client.js'
-import { signOutAccount } from './accountSlice.js'
+import { signOutAccount, signOutEverywhere } from './accountSlice.js'
 
 // The server is the source of truth for saved leads, so none of this is kept in local storage.
 // byPlaceId[googlePlaceId] = the saved lead as the server returned it (its own `id` is the server's id).
@@ -161,6 +161,7 @@ const slice = createSlice({
         state.total = Math.max(0, state.total - 1)
       })
       .addCase(signOutAccount.fulfilled, () => initialState)
+      .addCase(signOutEverywhere.fulfilled, () => initialState)
       .addMatcher(isPending(...changes), (state, action) => {
         state.busy[keyOf(action)] = true
         state.actionError = null

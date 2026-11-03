@@ -1,31 +1,13 @@
-// Optional accounts. If VITE_NEON_AUTH_URL is not set, the app is guest-only and none of this runs.
-// The sign-in library is loaded only when it is first needed, so guests never download it.
+// Where the login token lives. Our own backend issues it (POST /auth/login or /auth/register) and it is sent with
+// every request as "Authorization: Bearer <token>". It is kept in this browser's local storage until it expires or
+// the person signs out. A guest has no token.
 
-const AUTH_URL = String(import.meta.env.VITE_NEON_AUTH_URL || '').replace(/\/+$/, '')
+const KEY = 'omni-model:token'
 
-export const accountsEnabled = Boolean(AUTH_URL)
+// Sign-in is part of the app now: it only needs the same backend address the rest of the app already uses.
+export const accountsEnabled = true
 
-let clientPromise = null
-
-export function getAuthClient() {
-  if (!accountsEnabled) return Promise.resolve(null)
-  if (!clientPromise) {
-    clientPromise = import('@neondatabase/neon-js/auth').then((m) => m.createAuthClient(AUTH_URL))
-    clientPromise.catch(() => {
-      clientPromise = null // allow a retry after a failed load
-    })
-  }
-  return clientPromise
-}
-
-// Guests never ask for a token. The account slice switches this on after a successful sign-in.
-let signedIn = false
-let cached = { token: null, exp: 0 }
-
-export function markSignedIn(value) {
-  signedIn = Boolean(value)
-  if (!signedIn) cached = { token: null, exp: 0 }
-}
+let session = read() // { token, exp } or null
 
 function expiryOf(token) {
   try {
@@ -36,21 +18,44 @@ function expiryOf(token) {
   }
 }
 
-/** A token for the API, or null for guests. Tokens last about 15 minutes, so one is reused until nearly expired. */
-export async function getAccessToken() {
-  if (!accountsEnabled || !signedIn) return null
-  if (cached.token && cached.exp - Date.now() > 60_000) return cached.token
+function read() {
   try {
-    const client = await getAuthClient()
-    const { data } = await client.token()
-    let token = data?.token || null
-    if (!token) {
-      const session = await client.getSession()
-      token = session?.data?.session?.access_token || null
-    }
-    cached = { token, exp: token ? expiryOf(token) : 0 }
-    return token
+    const raw = JSON.parse(localStorage.getItem(KEY) || 'null')
+    if (raw && typeof raw.token === 'string' && raw.exp > Date.now()) return raw
+    if (raw) localStorage.removeItem(KEY) // expired or damaged
   } catch {
-    return null
+    /* storage blocked: the person stays signed in only until the page is closed */
   }
+  return null
+}
+
+/** Remember a token the server just issued. */
+export function storeSession({ token }) {
+  session = { token, exp: expiryOf(token) }
+  try {
+    localStorage.setItem(KEY, JSON.stringify(session))
+  } catch {
+    /* ignore: the in-memory copy still works for this visit */
+  }
+}
+
+/** Forget it (sign out, or the server says it is no longer good). */
+export function clearSession() {
+  session = null
+  try {
+    localStorage.removeItem(KEY)
+  } catch {
+    /* ignore */
+  }
+}
+
+export function hasSession() {
+  return Boolean(getAccessToken())
+}
+
+/** The token for the API, or null for guests. An expired one is dropped. */
+export function getAccessToken() {
+  if (session && session.exp - Date.now() > 30_000) return session.token
+  if (session) clearSession()
+  return null
 }

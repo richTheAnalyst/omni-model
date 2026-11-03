@@ -4,7 +4,7 @@ import { accountsEnabled } from '../api/auth.js'
 import Button from '../components/Button.jsx'
 import { TextField } from '../components/Fields.jsx'
 import { useDocumentTitle } from '../hooks/hooks.js'
-import { accountMessageCleared, signInEmail, signOutAccount, signUpEmail } from '../store/accountSlice.js'
+import { accountMessageCleared, signInEmail, signOutAccount, signOutEverywhere, signUpEmail } from '../store/accountSlice.js'
 
 export default function Account() {
   useDocumentTitle('Account')
@@ -75,9 +75,17 @@ export default function Account() {
             </div>
           ))}
         </dl>
+        {error ? (
+          <p className="notice notice-warn" role="alert">
+            {error}
+          </p>
+        ) : null}
         <div className="form-foot">
           <Button variant="secondary" loading={busy} onClick={() => dispatch(signOutAccount())}>
             Sign out
+          </Button>
+          <Button variant="ghost" disabled={busy} onClick={() => dispatch(signOutEverywhere())}>
+            Sign out on all devices
           </Button>
         </div>
       </section>

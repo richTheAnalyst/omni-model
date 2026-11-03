@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { fetchMe } from '../api/account.js'
-import { accountsEnabled, getAuthClient, markSignedIn } from '../api/auth.js'
+import { fetchMe, loginRequest, logoutAllRequest, registerRequest } from '../api/account.js'
+import { clearSession, getAccessToken, storeSession } from '../api/auth.js'
 import { ApiError } from '../api/client.js'
 
-// Not saved to local storage: the sign-in library keeps its own session, and the server knows the rest.
+// Not saved in the store's local-storage copy: the token has its own entry (see api/auth.js), and the server knows the rest.
 const initialState = {
-  status: accountsEnabled ? 'checking' : 'guest', // checking | guest | signedIn
+  status: getAccessToken() ? 'checking' : 'guest', // checking | guest | signedIn
   user: null,
   workspaces: [],
   activeWorkspaceId: null,
@@ -17,40 +17,32 @@ const initialState = {
 function friendly(err) {
   if (err instanceof ApiError) {
     if (err.kind === 'network' || err.kind === 'timeout') return 'Could not reach the server. Check your connection and try again.'
-    if (err.kind === 'config') return 'Accounts are not available on the server right now.'
+    if (err.kind === 'request') return 'Please check the details you entered and try again.'
+    if (err.detail) return err.detail // e.g. "Incorrect email or password." or "An account with this email already exists."
+    if (err.kind === 'config') return 'Sign-in is not available on the server right now.'
   }
   return err?.message || 'Something went wrong. Please try again.'
 }
 
-/** Asks the server who this is. Turning the token on first lets the request carry it. */
-async function loadMe() {
-  markSignedIn(true)
+/** Is the saved token still good? A "no" from the server means sign in again; a network failure keeps the token. */
+export const initAccount = createAsyncThunk('account/init', async (_, { rejectWithValue }) => {
+  if (!getAccessToken()) return null
   try {
     return await fetchMe()
   } catch (err) {
-    markSignedIn(false)
-    throw err
-  }
-}
-
-export const initAccount = createAsyncThunk('account/init', async (_, { rejectWithValue }) => {
-  if (!accountsEnabled) return null
-  try {
-    const client = await getAuthClient()
-    const session = await client.getSession()
-    if (!session?.data?.session) return null
-    return await loadMe()
-  } catch (err) {
+    if (err instanceof ApiError && err.kind === 'auth') {
+      clearSession()
+      return null
+    }
     return rejectWithValue(friendly(err))
   }
 })
 
 export const signInEmail = createAsyncThunk('account/signIn', async ({ email, password }, { rejectWithValue }) => {
   try {
-    const client = await getAuthClient()
-    const res = await client.signIn.email({ email, password })
-    if (res?.error) return rejectWithValue(res.error.message || 'Could not sign in. Check your email and password.')
-    return await loadMe()
+    const res = await loginRequest({ email, password })
+    storeSession(res)
+    return res.me
   } catch (err) {
     return rejectWithValue(friendly(err))
   }
@@ -58,24 +50,28 @@ export const signInEmail = createAsyncThunk('account/signIn', async ({ email, pa
 
 export const signUpEmail = createAsyncThunk('account/signUp', async ({ name, email, password }, { rejectWithValue }) => {
   try {
-    const client = await getAuthClient()
-    const res = await client.signUp.email({ name, email, password })
-    if (res?.error) return rejectWithValue(res.error.message || 'Could not create the account.')
-    const session = await client.getSession()
-    if (!session?.data?.session) return { verify: true } // email verification is on: sign in after verifying
-    return { me: await loadMe() }
+    const res = await registerRequest({ name, email, password })
+    storeSession(res)
+    return { me: res.me }
   } catch (err) {
     return rejectWithValue(friendly(err))
   }
 })
 
+/** Signs out on this device only. */
 export const signOutAccount = createAsyncThunk('account/signOut', async () => {
+  clearSession()
+  return true
+})
+
+/** Signs out on every device. If the server cannot be reached, nothing changes and the person is told. */
+export const signOutEverywhere = createAsyncThunk('account/signOutEverywhere', async (_, { rejectWithValue }) => {
   try {
-    const client = await getAuthClient()
-    await client?.signOut()
-  } finally {
-    markSignedIn(false)
+    await logoutAllRequest()
+  } catch (err) {
+    if (!(err instanceof ApiError && err.kind === 'auth')) return rejectWithValue(friendly(err)) // already signed out is fine
   }
+  clearSession()
   return true
 })
 
@@ -126,12 +122,7 @@ const slice = createSlice({
       })
       .addCase(signUpEmail.fulfilled, (state, { payload }) => {
         state.busy = false
-        if (payload.verify) {
-          state.notice = 'Account created. Check your email to verify your address, then sign in.'
-          applyGuest(state)
-        } else {
-          applyMe(state, payload.me)
-        }
+        applyMe(state, payload.me)
       })
       .addCase(signUpEmail.rejected, (state, { payload }) => {
         state.busy = false
@@ -141,6 +132,19 @@ const slice = createSlice({
         applyGuest(state)
         state.error = ''
         state.notice = ''
+      })
+      .addCase(signOutEverywhere.pending, (state) => {
+        state.busy = true
+        state.error = ''
+      })
+      .addCase(signOutEverywhere.fulfilled, (state) => {
+        state.busy = false
+        applyGuest(state)
+        state.notice = 'You have been signed out on all devices.'
+      })
+      .addCase(signOutEverywhere.rejected, (state, { payload }) => {
+        state.busy = false
+        state.error = payload || 'Could not sign out everywhere. Try again.'
       })
   },
 })
