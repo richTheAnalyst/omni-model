@@ -9,9 +9,10 @@ import profiles from './profilesSlice.js'
 import search from './searchSlice.js'
 import settings from './settingsSlice.js'
 import account from './accountSlice.js'
+import tracking from './trackingSlice.js'
 
 export const store = configureStore({
-    reducer: { profiles, search, leads, analysis, outreach, dnc, settings, activity, account },
+    reducer: { profiles, search, leads, analysis, outreach, dnc, settings, activity, account, tracking },
 })
 
 const KEEP_RECENT_LEADS = 80
