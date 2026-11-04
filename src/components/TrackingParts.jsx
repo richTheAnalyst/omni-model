@@ -15,6 +15,7 @@ import {
   trackingErrorMessage,
 } from '../config/trackingUi.js'
 import { timeAgo } from '../lib/format.js'
+import { ExportLeadButton } from './ExportLeads.jsx'
 import {
   changeStatus,
   loadDetail,
@@ -288,6 +289,7 @@ export function TrackingPanel({ lead }) {
         <StatusTag tracked={tracked} />
       </header>
       <ActionError placeId={lead.id} />
+      <ExportLeadButton tracked={tracked} />
 
       <div className="field">
         <label htmlFor={statusId}>Status</label>

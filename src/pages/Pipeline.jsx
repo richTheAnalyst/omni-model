@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { accountsEnabled } from '../api/auth.js'
 import { LinkButton } from '../components/Button.jsx'
+import { ExportLeadsPanel } from '../components/ExportLeads.jsx'
 import { StatusTag } from '../components/TrackingParts.jsx'
 import { EmptyState, ErrorPanel } from '../components/States.jsx'
 import { industryLabel } from '../config/markets.js'
@@ -98,6 +99,7 @@ export default function Pipeline() {
   } else {
     body = (
       <>
+        <ExportLeadsPanel status={filter} />
         <div role="group" aria-label="Filter by status">
           <div className="filters">
             {FILTERS.map((f) => (

@@ -1,10 +1,76 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { accountsEnabled } from '../api/auth.js'
 import Button from '../components/Button.jsx'
+import Icon from '../components/Icon.jsx'
 import { TextField } from '../components/Fields.jsx'
 import { useDocumentTitle } from '../hooks/hooks.js'
 import { accountMessageCleared, signInEmail, signOutAccount, signOutEverywhere, signUpEmail } from '../store/accountSlice.js'
+
+const PERKS = [
+  ['star', 'Save every company you find', 'Your leads follow you to any phone or computer.'],
+  ['clock', 'Track every call and message', 'See what happened, when, and what to do next.'],
+  ['check', 'Follow-up reminders', 'Never lose a warm lead because you forgot to call back.'],
+  ['download', 'Download to Excel', 'Leads, statuses and history for a week or for everything.'],
+]
+
+/** 0 (too short) to 3 (strong). Only a hint: the server enforces the real rule. */
+function strengthOf(password) {
+  if (password.length < 8) return 0
+  let score = 1
+  if (password.length >= 12) score += 1
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password) && /\d/.test(password)) score += 1
+  else if (/\d/.test(password) && /[^A-Za-z0-9]/.test(password)) score += 1
+  return Math.min(3, score)
+}
+const STRENGTH_LABEL = ['Too short', 'Okay', 'Good', 'Strong']
+
+function PasswordField({ value, onChange, mode, error }) {
+  const id = useId()
+  const [shown, setShown] = useState(false)
+  const strength = strengthOf(value)
+  return (
+    <div className="field">
+      <label htmlFor={id}>
+        Password<span className="req" aria-hidden="true"> *</span>
+      </label>
+      <div className="pw-wrap">
+        <input
+          id={id}
+          type={shown ? 'text' : 'password'}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
+          required
+        />
+        <button type="button" className="pw-toggle" onClick={() => setShown((v) => !v)} aria-pressed={shown}>
+          {shown ? 'Hide' : 'Show'}
+        </button>
+      </div>
+      {mode === 'signup' ? (
+        <div className="pw-meter" aria-live="polite">
+          <span className={`pw-bars s${strength}`} aria-hidden="true">
+            <i /><i /><i />
+          </span>
+          <span className="field-hint">{value ? `${STRENGTH_LABEL[strength]}. Use at least 8 characters.` : 'Use at least 8 characters.'}</span>
+        </div>
+      ) : null}
+      {error ? (
+        <p className="field-error" id={`${id}-error`}>
+          {error}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+function initialsOf(user) {
+  const source = (user?.name || user?.email || '?').trim()
+  const parts = source.split(/[\s@._-]+/).filter(Boolean)
+  return ((parts[0]?.[0] || '?') + (parts.length > 1 ? parts[1][0] : '')).toUpperCase()
+}
 
 export default function Account() {
   useDocumentTitle('Account')
@@ -15,6 +81,7 @@ export default function Account() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [touched, setTouched] = useState(false)
+  const tabId = useId()
 
   const errors = {}
   if (mode === 'signup' && !name.trim()) errors.name = 'Enter your name.'
@@ -31,6 +98,7 @@ export default function Account() {
   }
 
   const switchMode = (next) => {
+    if (next === mode) return
     setMode(next)
     setTouched(false)
     dispatch(accountMessageCleared())
@@ -53,34 +121,35 @@ export default function Account() {
     )
   } else if (status === 'signedIn') {
     body = (
-      <section className="panel" aria-labelledby="account-title">
-        <header className="panel-head">
-          <h2 id="account-title">Signed in</h2>
-        </header>
-        <dl className="kv">
+      <section className="panel acct-me" aria-labelledby="account-title">
+        <div className="acct-me-head">
+          <span className="acct-avatar" aria-hidden="true">
+            {initialsOf(user)}
+          </span>
           <div>
-            <dt>Name</dt>
-            <dd>{user?.name || 'Not set'}</dd>
+            <h2 id="account-title">{user?.name || 'Your account'}</h2>
+            <p className="muted">{user?.email || ''}</p>
           </div>
-          <div>
-            <dt>Email</dt>
-            <dd>{user?.email || 'Not set'}</dd>
-          </div>
-          {workspaces.map((w) => (
-            <div key={w.id}>
-              <dt>Business</dt>
-              <dd>
-                {w.name} ({w.role})
-              </dd>
-            </div>
-          ))}
-        </dl>
+          <span className="tag tag-good">Signed in</span>
+        </div>
+        {workspaces.length ? (
+          <dl className="kv">
+            {workspaces.map((w) => (
+              <div key={w.id}>
+                <dt>Business</dt>
+                <dd>
+                  {w.name} <span className="muted">({w.role})</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
         {error ? (
           <p className="notice notice-warn" role="alert">
             {error}
           </p>
         ) : null}
-        <div className="form-foot">
+        <div className="form-foot acct-me-foot">
           <Button variant="secondary" loading={busy} onClick={() => dispatch(signOutAccount())}>
             Sign out
           </Button>
@@ -91,18 +160,42 @@ export default function Account() {
       </section>
     )
   } else {
+    const signup = mode === 'signup'
     body = (
-      <>
-        <section className="panel">
-          <p>
-            You are using Omni Model as a <strong>guest</strong>. Your leads are kept in this browser only, and they are gone
-            if you clear its data or switch devices. An account keeps your work safe and lets you track your calls and clients.
-          </p>
-        </section>
-        <form className="panel form-panel" onSubmit={submit} noValidate>
-          <header className="panel-head">
-            <h2>{mode === 'signup' ? 'Create an account' : 'Sign in'}</h2>
-          </header>
+      <div className="auth-card">
+        <aside className="auth-side" aria-label="Why create an account">
+          <p className="eyebrow eyebrow-light">Omni Model</p>
+          <h2 className="auth-side-title">Turn leads into clients, and keep the proof.</h2>
+          <ul className="auth-perks">
+            {PERKS.map(([icon, title, text]) => (
+              <li key={title}>
+                <span className="auth-perk-icon" aria-hidden="true">
+                  <Icon name={icon} size={18} />
+                </span>
+                <span>
+                  <strong>{title}</strong>
+                  <span>{text}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="auth-guest">Not ready? You can keep using Omni Model as a guest. Guest leads stay in this browser only.</p>
+        </aside>
+
+        <form className="auth-form" onSubmit={submit} noValidate aria-labelledby={`${tabId}-title`}>
+          <div className="auth-tabs" role="tablist" aria-label="Sign in or create an account">
+            <button type="button" role="tab" aria-selected={!signup} className={!signup ? 'is-on' : ''} onClick={() => switchMode('signin')}>
+              Sign in
+            </button>
+            <button type="button" role="tab" aria-selected={signup} className={signup ? 'is-on' : ''} onClick={() => switchMode('signup')}>
+              Create account
+            </button>
+          </div>
+          <div>
+            <h2 id={`${tabId}-title`}>{signup ? 'Create your free account' : 'Welcome back'}</h2>
+            <p className="muted">{signup ? 'It takes less than a minute.' : 'Sign in to see your saved leads.'}</p>
+          </div>
+
           {notice ? (
             <p className="notice notice-info" role="status">
               {notice}
@@ -113,16 +206,10 @@ export default function Account() {
               {error}
             </p>
           ) : null}
-          <div className="form-grid">
-            {mode === 'signup' ? (
-              <TextField
-                label="Your name"
-                value={name}
-                onChange={setName}
-                autoComplete="name"
-                required
-                error={touched ? errors.name : undefined}
-              />
+
+          <div className="auth-fields">
+            {signup ? (
+              <TextField label="Your name" value={name} onChange={setName} autoComplete="name" required error={touched ? errors.name : undefined} />
             ) : null}
             <TextField
               label="Email"
@@ -134,27 +221,20 @@ export default function Account() {
               required
               error={touched ? errors.email : undefined}
             />
-            <TextField
-              label="Password"
-              type="password"
-              value={password}
-              onChange={setPassword}
-              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-              required
-              hint={mode === 'signup' ? 'At least 8 characters.' : undefined}
-              error={touched ? errors.password : undefined}
-            />
+            <PasswordField value={password} onChange={setPassword} mode={mode} error={touched ? errors.password : undefined} />
           </div>
-          <div className="form-foot">
-            <Button type="submit" variant="primary" loading={busy}>
-              {mode === 'signup' ? 'Create account' : 'Sign in'}
-            </Button>
-            <Button variant="ghost" onClick={() => switchMode(mode === 'signup' ? 'signin' : 'signup')} disabled={busy}>
-              {mode === 'signup' ? 'I already have an account' : 'Create an account'}
-            </Button>
-          </div>
+
+          <Button type="submit" variant="primary" size="lg" loading={busy} className="auth-submit">
+            {signup ? 'Create account' : 'Sign in'}
+          </Button>
+          <p className="auth-switch muted">
+            {signup ? 'Already have an account? ' : 'New here? '}
+            <button type="button" className="link-button" disabled={busy} onClick={() => switchMode(signup ? 'signin' : 'signup')}>
+              {signup ? 'Sign in' : 'Create an account'}
+            </button>
+          </p>
         </form>
-      </>
+      </div>
     )
   }
 
