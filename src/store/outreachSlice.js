@@ -4,7 +4,7 @@ import { createOutreach } from '../api/outreach.js'
 import { localDataCleared } from './actions.js'
 import { pickPersisted } from './persist.js'
 import { draftKey, selectBusiness, selectBusinessComplete } from './selectors.js'
-import { buildOfferingsFromServices } from '../config/profile.js'
+import { buildRequestProfile } from '../config/profile.js'
 
 const persisted = pickPersisted('outreach')
 
@@ -29,11 +29,7 @@ export const generateDraft = createAsyncThunk(
         detail: 'The business profile is not loaded yet. Reload the page.',
       })
     }
-    const dynamicOfferings = buildOfferingsFromServices(business.service)
-    const profile = {
-      ...baseProfile,
-      offerings: Object.keys(dynamicOfferings).length ? dynamicOfferings : baseProfile.offerings,
-    }
+    const profile = buildRequestProfile(baseProfile, { business, playbook: state.settings.playbook, fitScores: state.settings.fitScores })
     try {
       const res = await createOutreach(
         {

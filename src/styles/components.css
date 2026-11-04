@@ -24,7 +24,7 @@
 .field { display: grid; gap: 6px; align-content: start; }
 .field label { font-size: var(--fs-sm); font-weight: 600; color: var(--text-2); }
 .req { color: var(--bad); }
-input[type='text'], input[type='email'], input[type='tel'], input[type='number'], select, textarea {
+input[type='text'], input[type='email'], input[type='tel'], input[type='number'], input[type='password'], input[type='url'], input[type='date'], input[type='search'], select, textarea {
   width: 100%; min-height: 42px; padding: 9px 12px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-md); transition: border-color 120ms, box-shadow 120ms;
 }
 input::placeholder { color: #8b94aa; }

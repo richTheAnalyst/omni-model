@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import BusinessForm from '../components/BusinessForm.jsx'
 import Button from '../components/Button.jsx'
+import PlaybookForm from '../components/PlaybookForm.jsx'
 import Icon from '../components/Icon.jsx'
 import { ErrorPanel } from '../components/States.jsx'
 import { useDocumentTitle } from '../hooks/hooks.js'
@@ -34,6 +35,7 @@ export default function Settings() {
 
       <div className="stack">
         <BusinessForm />
+        <PlaybookForm />
 
         <section className="panel" aria-labelledby="workspace-title">
           <header className="panel-head">

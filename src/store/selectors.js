@@ -17,6 +17,7 @@ export const selectResultLeads = createSelector([selectResultIds, selectLeadEnti
 
 /** Sender details exactly as the user typed them in Settings. */
 export const selectBusiness = (state) => state.settings.business
+export const selectPlaybook = (state) => state.settings.playbook
 
 /** AI-suggested fit scores: { sectorKey: { offeringKey: 0..1 } } */
 export const selectFitScores = (state) => state.settings.fitScores || {}

@@ -58,3 +58,7 @@
 .export-week input { max-width: 220px; }
 .export-check { display: flex; align-items: center; gap: var(--s-2); font-size: var(--fs-sm); }
 @media (max-width: 719px) { .export-row .btn { width: 100%; } .export-week input { max-width: none; } }
+
+/* ---- Settings: How you sell */
+.playbook-tools { display: flex; gap: var(--s-4); flex-wrap: wrap; font-size: var(--fs-sm); }
+.notice .btn { margin-left: auto; flex: none; }

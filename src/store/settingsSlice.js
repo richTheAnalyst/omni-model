@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { pickPersisted } from './persist.js'
 import { suggestFit as suggestFitApi } from '../api/fit.js'
+import { buildRequestProfile } from '../config/profile.js'
 
 const persisted = pickPersisted('settings')
 
@@ -12,16 +13,27 @@ function cleanBusiness(raw) {
   return out
 }
 
+// "How you sell": the words and drafts that make the profile this business's own. Empty means "use the neutral default".
+export const PLAYBOOK_FIELDS = ['signal_words', 'competitor_kind', 'email', 'proposal', 'followup']
+
+function cleanPlaybook(raw) {
+  const out = {}
+  for (const key of PLAYBOOK_FIELDS) out[key] = typeof raw?.[key] === 'string' ? raw[key] : ''
+  return out
+}
+
 /** Ask the AI to suggest offering fit scores for each industry, then store
  * them in the profile so /search returns meaningful best-fit results.
  * Called once when the user saves or changes their services. */
 export const runSuggestFit = createAsyncThunk(
   'settings/suggestFit',
   async ({ profile, sectors }, { getState, signal, rejectWithValue }) => {
-    const baseProfile = profile || getState().profiles.byId[getState().profiles.selectedId]
-    if (!baseProfile) {
+    const stored = profile || getState().profiles.byId[getState().profiles.selectedId]
+    if (!stored) {
       return rejectWithValue({ kind: 'config', status: 503, detail: 'No business profile loaded yet. Reload the page.' })
     }
+    // Rate the services this business really sells (from Settings), not the neutral placeholder service.
+    const baseProfile = buildRequestProfile(stored, { business: getState().settings.business, playbook: getState().settings.playbook })
     const sectorKeys = sectors || Object.keys(baseProfile.sectors || {})
     try {
       const res = await suggestFitApi({ profile: baseProfile, sectors: sectorKeys }, { signal })
@@ -36,6 +48,7 @@ const slice = createSlice({
   name: 'settings',
   initialState: {
     business: cleanBusiness(persisted.businessDetails),
+    playbook: cleanPlaybook(persisted.playbook),
     welcomeSeen: persisted.welcomeSeen === true,
     fitScores: persisted.fitScores || {},
     fitStatus: 'idle', // idle | loading | succeeded | failed
@@ -44,7 +57,13 @@ const slice = createSlice({
   },
   reducers: {
     businessSaved(state, { payload }) {
-      state.business = cleanBusiness(payload)
+      const next = cleanBusiness(payload)
+      // Fit ratings belong to the services they were made for. A different service list means rating again.
+      if (next.service.trim() !== state.business.service.trim()) state.fitScores = {}
+      state.business = next
+    },
+    playbookSaved(state, { payload }) {
+      state.playbook = cleanPlaybook(payload)
     },
     setFitScores(state, { payload }) {
       state.fitScores = { ...state.fitScores, ...payload }
@@ -74,5 +93,5 @@ const slice = createSlice({
   },
 })
 
-export const { businessSaved, setFitScores, welcomeSeen } = slice.actions
+export const { businessSaved, playbookSaved, setFitScores, welcomeSeen } = slice.actions
 export default slice.reducer

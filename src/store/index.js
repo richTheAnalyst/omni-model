@@ -39,6 +39,7 @@ attachPersistence(store, {
     s.outreach.drafts,
     s.dnc.byId,
     s.settings.business,
+    s.settings.playbook,
     s.settings.welcomeSeen,
     s.settings.fitScores,
     s.settings.fitStatus,
@@ -52,6 +53,7 @@ attachPersistence(store, {
     dnc: { byId: s.dnc.byId },
     settings: {
       businessDetails: s.settings.business,
+      playbook: s.settings.playbook,
       welcomeSeen: s.settings.welcomeSeen,
       fitScores: s.settings.fitScores,
     },
