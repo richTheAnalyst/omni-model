@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import '../styles/account-export.css' 
 import { useDispatch, useSelector } from 'react-redux'
 import { accountsEnabled } from '../api/auth.js'
 import Button from '../components/Button.jsx'
@@ -14,7 +15,7 @@ const PERKS = [
   ['download', 'Download to Excel', 'Leads, statuses and history for a week or for everything.'],
 ]
 
-/** 0 (too short) to 3 (strong). Only a hint: the server enforces the real rule. */
+
 function strengthOf(password) {
   if (password.length < 8) return 0
   let score = 1

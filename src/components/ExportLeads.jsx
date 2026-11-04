@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import '../styles/account-export.css' 
 import { useSelector } from 'react-redux'
 import { exportLeadsXlsx } from '../api/leadExport.js'
 import { serializeError } from '../api/client.js'
