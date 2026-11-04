@@ -11,6 +11,7 @@ export function eligibleIds(state, ids) {
   return ids.filter((id) => state.leads.entities[id]?.name && !state.dnc.byId[id])
 }
 
+
 export const cancelBulk = () => () => {
   runId += 1
 }
