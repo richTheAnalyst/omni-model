@@ -17,6 +17,7 @@ const Leads = lazy(() => import('./pages/Leads.jsx'))
 const LeadDetail = lazy(() => import('./pages/LeadDetail.jsx'))
 const OutreachIndex = lazy(() => import('./pages/OutreachIndex.jsx'))
 const OutreachWorkspace = lazy(() => import('./pages/OutreachWorkspace.jsx'))
+const BulkOutreach = lazy(() => import('./pages/BulkOutreach.jsx'))
 const Account = lazy(() => import('./pages/Account.jsx'))
 const Activity = lazy(() => import('./pages/Activity.jsx'))
 const Pipeline = lazy(() => import('./pages/Pipeline.jsx'))
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="leads/:leadId" element={<LeadDetail />} />
           <Route path="pipeline" element={<Pipeline />} />
           <Route path="outreach" element={<OutreachIndex />} />
+          <Route path="outreach/bulk" element={<BulkOutreach />} />
           <Route path="outreach/:leadId" element={<OutreachWorkspace />} />
           <Route path="account" element={<Account />} />
           <Route path="activity" element={<Activity />} />

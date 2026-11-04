@@ -1,5 +1,7 @@
 import { memo } from 'react'
-import { useSelector } from 'react-redux'
+import { useCallback } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { added, removed, toggled } from '../store/selectionSlice.js'
 import { Link, useNavigate } from 'react-router-dom'
 import { StatusTag } from './TrackingParts.jsx'
 import { bestEntry } from '../lib/score.js'
@@ -62,7 +64,22 @@ function MapLinks({ lead }) {
     </span>
   )
 }
-const Row = memo(function Row({ lead, dnc }) {
+function Pick({ lead, dnc, selected, onToggle }) {
+  return (
+    <input
+      type="checkbox"
+      className="pick"
+      checked={selected}
+      disabled={dnc}
+      onChange={() => onToggle(lead.id)}
+      onClick={(e) => e.stopPropagation()}
+      aria-label={dnc ? `${displayName(lead)} is marked do not contact` : `Select ${displayName(lead)}`}
+      title={dnc ? 'Do not contact' : undefined}
+    />
+  )
+}
+
+const Row = memo(function Row({ lead, dnc, selected, onToggle }) {
   const navigate = useNavigate()
   const best = bestEntry(lead)
   const tel = telHref(lead.phone)
@@ -70,7 +87,10 @@ const Row = memo(function Row({ lead, dnc }) {
   const open = () => navigate(`/leads/${encodeURIComponent(lead.id)}`)
 
   return (
-    <tr className={`row ${dnc ? 'is-dnc' : ''}`} onClick={open}>
+    <tr className={`row ${dnc ? 'is-dnc' : ''} ${selected ? 'is-picked' : ''}`} onClick={open}>
+      <td className="cell-pick" onClick={(e) => e.stopPropagation()}>
+        <Pick lead={lead} dnc={dnc} selected={selected} onToggle={onToggle} />
+      </td>
       <td className="cell-main">
         <Link to={`/leads/${encodeURIComponent(lead.id)}`} className="row-link" onClick={(e) => e.stopPropagation()}>
           {displayName(lead)}
@@ -96,9 +116,6 @@ const Row = memo(function Row({ lead, dnc }) {
       <td>
         <ExternalSite url={lead.website} />
       </td>
-            <td>
-        <ExternalSite url={lead.website} />
-      </td>
       <td>
         <MapLinks lead={lead} />
       </td>
@@ -106,26 +123,40 @@ const Row = memo(function Row({ lead, dnc }) {
   )
 })
 
+function useSelection(leads, dncById) {
+  const dispatch = useDispatch()
+  const ids = useSelector((s) => s.selection.ids)
+  const picked = new Set(ids)
+  const onToggle = useCallback((id) => dispatch(toggled(id)), [dispatch])
+  const pickable = leads.filter((l) => !dncById[l.id]).map((l) => l.id)
+  const allOn = pickable.length > 0 && pickable.every((id) => picked.has(id))
+  const toggleAll = () => dispatch(allOn ? removed(pickable) : added(pickable))
+  return { picked, onToggle, allOn, toggleAll, canAll: pickable.length > 0 }
+}
+
 export function LeadsTable({ leads, dncById }) {
+  const { picked, onToggle, allOn, toggleAll, canAll } = useSelection(leads, dncById)
   return (
     <div className="panel table-panel">
       <table className="table">
         <caption className="sr-only">Companies found, best fit first</caption>
         <thead>
           <tr>
+            <th scope="col" className="cell-pick">
+              <input type="checkbox" className="pick" checked={allOn} disabled={!canAll} onChange={toggleAll} aria-label="Select all companies on this page" />
+            </th>
             <th scope="col">Company</th>
             <th scope="col">Best-fit offering</th>
             <th scope="col">Score</th>
             <th scope="col">Rating</th>
             <th scope="col">Phone</th>
             <th scope="col">Website</th>
-            <th scope="col">Website</th>
             <th scope="col">Map</th>
           </tr>
         </thead>
         <tbody>
           {leads.map((lead) => (
-            <Row key={lead.id} lead={lead} dnc={Boolean(dncById[lead.id])} />
+            <Row key={lead.id} lead={lead} dnc={Boolean(dncById[lead.id])} selected={picked.has(lead.id)} onToggle={onToggle} />
           ))}
         </tbody>
       </table>
@@ -133,13 +164,17 @@ export function LeadsTable({ leads, dncById }) {
   )
 }
 
-const Card = memo(function Card({ lead, dnc }) {
+const Card = memo(function Card({ lead, dnc, selected, onToggle }) {
   const best = bestEntry(lead)
   const tel = telHref(lead.phone)
   const site = safeUrl(lead.website)
   const rating = formatRating(lead.rating, lead.review_count)
   return (
-    <li className={`lead-card ${dnc ? 'is-dnc' : ''}`}>
+    <li className={`lead-card ${dnc ? 'is-dnc' : ''} ${selected ? 'is-picked' : ''}`}>
+      <label className="card-pick">
+        <Pick lead={lead} dnc={dnc} selected={selected} onToggle={onToggle} />
+        <span>{dnc ? 'Do not contact' : selected ? 'Selected' : 'Select'}</span>
+      </label>
       <Link to={`/leads/${encodeURIComponent(lead.id)}`} className="lead-card-main">
         <span className="lead-card-top">
           <strong className="lead-card-name">{displayName(lead)}</strong>
@@ -175,11 +210,18 @@ const Card = memo(function Card({ lead, dnc }) {
 })
 
 export function LeadCards({ leads, dncById }) {
+  const { picked, onToggle, allOn, toggleAll, canAll } = useSelection(leads, dncById)
   return (
+    <>
+    <label className="card-pick card-pick-all">
+      <input type="checkbox" className="pick" checked={allOn} disabled={!canAll} onChange={toggleAll} />
+      <span>Select all on this page</span>
+    </label>
     <ul className="lead-cards">
       {leads.map((lead) => (
-        <Card key={lead.id} lead={lead} dnc={Boolean(dncById[lead.id])} />
+        <Card key={lead.id} lead={lead} dnc={Boolean(dncById[lead.id])} selected={picked.has(lead.id)} onToggle={onToggle} />
       ))}
     </ul>
+    </>
   )
 }

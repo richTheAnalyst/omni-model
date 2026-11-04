@@ -1,3 +1,4 @@
+import SelectionBar from '../components/SelectionBar.jsx'
 import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
@@ -247,6 +248,7 @@ export default function Leads() {
         )}
 
         <Pagination page={page} pages={pages} onChange={goToPage} />
+        <SelectionBar allIds={filtered.map((l) => l.id)} dncById={dncById} />
 
         <details className="score-help">
           <summary>How scores work</summary>

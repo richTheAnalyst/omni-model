@@ -7,12 +7,13 @@ import outreach from './outreachSlice.js'
 import { attachPersistence } from './persist.js'
 import profiles from './profilesSlice.js'
 import search from './searchSlice.js'
+import selection from './selectionSlice.js'
 import settings from './settingsSlice.js'
 import account from './accountSlice.js'
 import tracking from './trackingSlice.js'
 
 export const store = configureStore({
-    reducer: { profiles, search, leads, analysis, outreach, dnc, settings, activity, account, tracking },
+    reducer: { profiles, search, leads, analysis, outreach, dnc, settings, activity, account, tracking, selection },
 })
 
 const KEEP_RECENT_LEADS = 80

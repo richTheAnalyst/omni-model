@@ -1,0 +1,31 @@
+/* Bulk outreach: tick boxes, selection bar, review page. */
+.pick { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; margin: 0; }
+.pick:disabled { cursor: not-allowed; opacity: .4; }
+.table .cell-pick { width: 40px; padding-right: 0; }
+.row.is-picked, .lead-card.is-picked { background: var(--accent-soft, rgba(79,107,255,.07)); }
+.card-pick { display: flex; align-items: center; gap: var(--s-2); padding: var(--s-2) var(--s-3) 0; font-size: var(--fs-sm); color: var(--text-2); cursor: pointer; }
+.card-pick-all { padding: 0 var(--s-1); }
+
+.selection-bar { position: sticky; bottom: calc(var(--s-3)); z-index: 15; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-5); padding: var(--s-3) var(--s-4); background: var(--ink-900); color: #fff; border-radius: var(--r-lg, 14px); box-shadow: 0 8px 28px rgba(10,15,40,.3); }
+.selection-bar .link-button { color: #b9c3e6; }
+.selection-bar .export-check { color: #fff; }
+.sel-top { display: flex; align-items: center; gap: var(--s-4); flex-wrap: wrap; }
+.sel-kinds { display: flex; gap: var(--s-4); border: 0; padding: 0; margin: 0; flex-wrap: wrap; }
+.sel-go { display: flex; align-items: center; gap: var(--s-3); margin-left: auto; flex-wrap: wrap; }
+.selection-bar .muted { color: #b9c3e6; }
+
+.bulk-progress { display: flex; align-items: center; gap: var(--s-4); }
+.bulk-bar { flex: 1; height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.bulk-bar i { display: block; height: 100%; background: var(--accent); transition: width .2s; }
+.bulk-tools { display: flex; align-items: flex-end; flex-wrap: wrap; gap: var(--s-3); padding: var(--s-3) 0; }
+.bulk-tools .muted { margin-right: auto; align-self: center; }
+.bulk-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-4); }
+.bulk-row { display: grid; gap: var(--s-2); padding: var(--s-4); border: 1px solid var(--line); border-radius: var(--r-md); min-width: 0; }
+.bulk-row-head { display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; }
+.bulk-row textarea { width: 100%; resize: vertical; line-height: 1.5; }
+.bulk-row-actions { display: flex; gap: var(--s-2); }
+@media (max-width: 719px) {
+  .selection-bar { bottom: calc(var(--tabbar-h) + var(--s-2)); }
+  .sel-go { margin-left: 0; width: 100%; }
+  .sel-go .btn { flex: 1; }
+}
