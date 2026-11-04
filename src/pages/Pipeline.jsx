@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { accountsEnabled } from '../api/auth.js'
 import { LinkButton } from '../components/Button.jsx'
+import AddCompanyPanel from '../components/AddCompany.jsx'
 import { ExportLeadsPanel } from '../components/ExportLeads.jsx'
 import { StatusTag } from '../components/TrackingParts.jsx'
 import { EmptyState, ErrorPanel } from '../components/States.jsx'
@@ -159,7 +160,10 @@ export default function Pipeline() {
         <p className="lead">The companies you saved, and where each one stands.</p>
         <WeekLine week={week} />
       </header>
-      <div className="stack">{body}</div>
+      <div className="stack">
+        {accountStatus === 'signedIn' ? <AddCompanyPanel /> : null}
+        {body}
+      </div>
     </div>
   )
 }

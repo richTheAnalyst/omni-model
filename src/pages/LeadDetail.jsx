@@ -143,6 +143,16 @@ export default function LeadDetail() {
 
       <div className="detail-grid">
         <div className="detail-main">
+          {offerings.length === 0 ? (
+            <section className="panel panel-flat" aria-labelledby="opp-title">
+              <h2 id="opp-title" className="panel-title">No opportunity score</h2>
+              <p className="muted">
+                {leadId.startsWith('manual:')
+                  ? 'You added this company yourself, so it has no search score. Everything else works: log calls and messages, set reminders and download it to Excel.'
+                  : 'This company has no score yet.'}
+              </p>
+            </section>
+          ) : (
           <section className="panel opportunity" aria-labelledby="opp-title">
             <header className="panel-head">
               <h2 id="opp-title">Opportunity score</h2>
@@ -189,6 +199,7 @@ export default function LeadDetail() {
               <ScoreCompare lead={lead} offeringKey={selectedKey} offeringLabels={offeringLabelsMap} />
             ) : null}
           </section>
+          )}
 
           {selected ? <BreakdownPanel entry={selected} /> : null}
           {lead.analysis ? <SignalsPanel analysis={lead.analysis} /> : null}
@@ -202,6 +213,8 @@ export default function LeadDetail() {
             <h2 id="out-title" className="panel-title">Outreach</h2>
             {dnc ? (
               <p className="muted">This company is marked do not contact, so outreach is hidden.</p>
+            ) : !selected ? (
+              <p className="muted">Outreach drafts are written from a search score, which this company does not have.</p>
             ) : (
               <>
                 <p className="muted">
