@@ -6,7 +6,7 @@ import { pickOffering } from '../lib/offering.js'
 const CONCURRENCY = 4
 let runId = 0
 
-/** Who can be written to: has a name and is not flagged do-not-contact. */
+
 export function eligibleIds(state, ids) {
   return ids.filter((id) => state.leads.entities[id]?.name && !state.dnc.byId[id])
 }
