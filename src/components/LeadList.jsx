@@ -68,7 +68,7 @@ function Pick({ lead, dnc, selected, onToggle }) {
   return (
     <input
       type="checkbox"
-      className="pick"
+      className="pick-box"
       checked={selected}
       disabled={dnc}
       onChange={() => onToggle(lead.id)}
@@ -143,7 +143,7 @@ export function LeadsTable({ leads, dncById }) {
         <thead>
           <tr>
             <th scope="col" className="cell-pick">
-              <input type="checkbox" className="pick" checked={allOn} disabled={!canAll} onChange={toggleAll} aria-label="Select all companies on this page" />
+              <input type="checkbox" className="pick-box" checked={allOn} disabled={!canAll} onChange={toggleAll} aria-label="Select all companies on this page" />
             </th>
             <th scope="col">Company</th>
             <th scope="col">Best-fit offering</th>
@@ -214,7 +214,7 @@ export function LeadCards({ leads, dncById }) {
   return (
     <>
     <label className="card-pick card-pick-all">
-      <input type="checkbox" className="pick" checked={allOn} disabled={!canAll} onChange={toggleAll} />
+      <input type="checkbox" className="pick-box" checked={allOn} disabled={!canAll} onChange={toggleAll} />
       <span>Select all on this page</span>
     </label>
     <ul className="lead-cards">

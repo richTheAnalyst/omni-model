@@ -1,6 +1,6 @@
 /* Bulk outreach: tick boxes, selection bar, review page. */
-.pick { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; margin: 0; }
-.pick:disabled { cursor: not-allowed; opacity: .4; }
+.pick-box { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; margin: 0; }
+.pick-box:disabled { cursor: not-allowed; opacity: .4; }
 .table .cell-pick { width: 40px; padding-right: 0; }
 .row.is-picked, .lead-card.is-picked { background: var(--accent-soft, rgba(79,107,255,.07)); }
 .card-pick { display: flex; align-items: center; gap: var(--s-2); padding: var(--s-2) var(--s-3) 0; font-size: var(--fs-sm); color: var(--text-2); cursor: pointer; }
