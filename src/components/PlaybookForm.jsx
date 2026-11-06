@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react'
-import '../styles/account-export.css' 
+import '../styles/account-export.css' // the styles for this screen travel with it, so no other file needs editing
 import { useDispatch, useSelector } from 'react-redux'
 import {
   buildOfferingsFromServices,
@@ -13,6 +13,7 @@ import { PLAYBOOK_FIELDS, playbookSaved, runSuggestFit } from '../store/settings
 import { selectBusiness, selectFitStatus, selectPlaybook } from '../store/selectors.js'
 import Button from './Button.jsx'
 import { TextField } from './Fields.jsx'
+import TemplateUpload from './TemplateUpload.jsx'
 
 const TEMPLATES = [
   { key: 'email', label: 'First email' },
@@ -26,6 +27,7 @@ function TemplateField({ id, label, value, onChange }) {
     <div className="field form-wide">
       <label htmlFor={id}>{label}</label>
       <textarea id={id} rows={9} maxLength={MAX_TEMPLATE_CHARS} value={value} onChange={(e) => onChange(e.target.value)} placeholder="Leave empty to use the standard wording." />
+      <TemplateUpload label={label} onUse={onChange} />
       <div className="playbook-tools">
         <button type="button" className="link-button" onClick={() => onChange(DEFAULT_OUTREACH[TEMPLATES.find((t) => t.label === label).key])}>
           Start from the standard wording

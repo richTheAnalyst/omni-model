@@ -4,6 +4,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import BusinessForm from '../components/BusinessForm.jsx'
 import Button, { LinkButton } from '../components/Button.jsx'
 import DraftEditor from '../components/DraftEditor.jsx'
+import ProposalPdfDownload from '../components/ProposalPdfDownload.jsx'
 import Icon from '../components/Icon.jsx'
 import { SelectField } from '../components/Fields.jsx'
 import { EmptyState, ErrorPanel, Skeleton } from '../components/States.jsx'
@@ -222,6 +223,7 @@ export default function OutreachWorkspace() {
           </div>
 
           <div role="tabpanel" id="outreach-panel" aria-labelledby={`tab-${kind}`} className="tab-panel">
+            {activeKind.id === 'proposal' ? <ProposalPdfDownload items={[{ lead, offeringLabel: offerings[offering] || '' }]} /> : null}
             {loading ? (
               <div className="draft-loading" role="status" aria-live="polite">
                 <p className="muted">{COPY.loading.outreach}</p>

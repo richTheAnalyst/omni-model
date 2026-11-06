@@ -62,3 +62,13 @@
 /* ---- Settings: How you sell */
 .playbook-tools { display: flex; gap: var(--s-4); flex-wrap: wrap; font-size: var(--fs-sm); }
 .notice .btn { margin-left: auto; flex: none; }
+
+/* Upload your own proposal PDF */
+.tpl-upload { display: grid; gap: var(--s-2); }
+.tpl-panel { display: grid; gap: var(--s-3); border: 1px solid var(--line); }
+.tpl-panel textarea { width: 100%; resize: vertical; line-height: 1.5; }
+
+/* Your own proposal PDF */
+.pdf-dl { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); padding-bottom: var(--s-3); }
+.pdf-dl .notice { flex-basis: 100%; }
+.pdf-current { display: grid; gap: var(--s-3); }

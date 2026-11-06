@@ -6,6 +6,7 @@ import { exportDraft, EXPORT_MAX_CHARS } from '../api/export.js'
 import { serializeError } from '../api/client.js'
 import Button, { LinkButton } from '../components/Button.jsx'
 import Icon from '../components/Icon.jsx'
+import ProposalPdfDownload from '../components/ProposalPdfDownload.jsx'
 import { SelectField } from '../components/Fields.jsx'
 import { EmptyState } from '../components/States.jsx'
 import { OUTREACH_KINDS, EXPORT_FORMATS } from '../config/product.js'
@@ -15,6 +16,9 @@ import { displayName, sanitizeFilename } from '../lib/format.js'
 import { cancelBulk, retryOne } from '../store/bulkOutreach.js'
 import { draftEdited, errorDismissed } from '../store/outreachSlice.js'
 import { batchDiscarded } from '../store/selectionSlice.js'
+import { selectActiveProfile, selectBusiness } from '../store/selectors.js'
+import { offeringLabels } from '../config/profile.js'
+import { pickOffering } from '../lib/offering.js'
 import { draftKey } from '../store/selectors.js'
 
 const DIVIDER = '\n\n----------------------------------------\n\n'
@@ -104,6 +108,8 @@ export default function BulkOutreach() {
   const [format, setFormat] = useState('docx')
   const [dl, setDl] = useState({ busy: false, msg: '', err: '' })
   const [copyAll, setCopyAll] = useState('')
+  const profile = useSelector(selectActiveProfile)
+  const business = useSelector(selectBusiness)
 
   const kinds = useMemo(() => OUTREACH_KINDS.filter((k) => batch?.kinds.includes(k.id)), [batch])
   const active = kinds.find((k) => k.id === kind) || kinds[0]
@@ -231,6 +237,14 @@ export default function BulkOutreach() {
             </Button>
           ) : null}
         </div>
+        {active.id === 'proposal' && rows.length ? (
+          <ProposalPdfDownload
+            items={rows.map((lead) => {
+              const labels = offeringLabels(profile, business.service)
+              return { lead, offeringLabel: labels[pickOffering(profile, business, lead)] || '' }
+            })}
+          />
+        ) : null}
         {dl.msg ? <p className="small export-done" role="status">{dl.msg}</p> : null}
         {dl.err ? <p className="notice notice-warn" role="alert">{dl.err}</p> : null}
 
