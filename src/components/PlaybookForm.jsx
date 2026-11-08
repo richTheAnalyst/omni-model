@@ -64,6 +64,11 @@ export default function PlaybookForm() {
     return () => clearTimeout(t)
   }, [saved])
 
+  // The proposal PDF panel can fill in the proposal text from outside this form; follow it.
+  useEffect(() => {
+    setValues((v) => (v.proposal === current.proposal ? v : { ...v, proposal: current.proposal || '' }))
+  }, [current.proposal])
+
   const dirty = PLAYBOOK_FIELDS.some((k) => (values[k] || '') !== (current[k] || ''))
   const set = (key) => (v) => setValues((s) => ({ ...s, [key]: v }))
   const words = parseSignalWords(values.signal_words)

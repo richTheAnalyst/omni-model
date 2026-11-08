@@ -24,7 +24,7 @@ function phoneRegex(phone) {
  * pairs: [[phrase, placeholder]] in priority order (longer phrases first so "Acme Ltd" wins over "Acme").
  * Returns { text, counts } where counts[placeholder] is how many swaps were made.
  */
-export function makeTemplate(text, { business = {}, clientName = '', clientCity = '', service = '' } = {}) {
+export function makeTemplate(text, { business = {}, clientName = '', clientCity = '', service = '', ownNames = [] } = {}) {
   const counts = {}
   let out = String(text || '')
   const swap = (regex, placeholder) => {
@@ -36,6 +36,7 @@ export function makeTemplate(text, { business = {}, clientName = '', clientCity 
   }
   const pairs = [
     [business.our_email, 'our_email'],
+    ...ownNames.map((n) => [n, 'our_name']),
     [business.our_name, 'our_name'],
     [business.our_title, 'our_title'],
     [clientName, 'company'],

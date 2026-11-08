@@ -34,7 +34,7 @@ export const DEFAULT_OUTREACH = {
 export const TEMPLATE_PLACEHOLDERS = [
   'company', 'city', 'offering_label', 'offering_desc', 'local_context', 'our_name', 'our_title', 'our_email', 'our_phone',
 ]
-export const MAX_TEMPLATE_CHARS = 20000 // the server refuses longer ones
+export const MAX_TEMPLATE_CHARS = 40000 // the server refuses longer ones
 
 export const PROFILE = {
   id: 'workspace',
