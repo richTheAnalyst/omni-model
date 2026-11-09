@@ -23,6 +23,7 @@ export function normalizeLead(raw) {
     address: raw?.address ?? null,
     phone: raw?.phone ?? null,
     website: raw?.website ?? null,
+    email: typeof raw?.email === 'string' && raw.email.trim() ? raw.email.trim() : null,
     rating: typeof raw?.rating === 'number' ? raw.rating : null,
     review_count: typeof raw?.review_count === 'number' ? raw.review_count : null,
     region: raw?.region || '',

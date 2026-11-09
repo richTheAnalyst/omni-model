@@ -5,6 +5,7 @@ import '../styles/bulk.css'
 import { exportDraft, EXPORT_MAX_CHARS } from '../api/export.js'
 import { serializeError } from '../api/client.js'
 import Button, { LinkButton } from '../components/Button.jsx'
+import BulkSendPanel from '../components/BulkSendPanel.jsx'
 import Icon from '../components/Icon.jsx'
 import ProposalPdfDownload from '../components/ProposalPdfDownload.jsx'
 import { SelectField } from '../components/Fields.jsx'
@@ -137,6 +138,7 @@ export default function BulkOutreach() {
   const failedCount = rows.filter((l) => statuses[draftKey(l.id, active.id)]?.status === 'error').length
   const pct = batch.total ? Math.round((batch.done / batch.total) * 100) : 100
 
+  const offeringFor = (lead) => offeringLabels(profile, business.service)[pickOffering(profile, business, lead)] || ''
   const textFor = (l) => `${displayName(l)}\n\n${drafts[draftKey(l.id, active.id)].text}`
 
   const doCopyAll = async () => {
@@ -255,6 +257,16 @@ export default function BulkOutreach() {
           })}
         </ul>
       </section>
+
+      {ready.length ? (
+        <BulkSendPanel
+          key={active.id}
+          rows={ready}
+          kind={active.id}
+          drafts={drafts}
+          offeringFor={offeringFor}
+        />
+      ) : null}
 
       <div>
         <Button variant="ghost" onClick={() => dispatch(batchDiscarded())}>

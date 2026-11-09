@@ -6,6 +6,7 @@ import { serializeError } from '../api/client.js'
 import { emailStatus, sendEmail } from '../api/email.js'
 import { trackingErrorMessage } from '../config/trackingUi.js'
 import useProposalTemplate from '../hooks/useProposalTemplate.js'
+import { leadEmail } from '../lib/leadEmail.js'
 import { coverNote, suggestSubject } from '../lib/subject.js'
 import { displayName, sanitizeFilename } from '../lib/format.js'
 import { selectBusiness } from '../store/selectors.js'
@@ -28,10 +29,12 @@ export default function SendEmailPanel({ lead, kind, draftText, offeringLabel, t
   const signedIn = useSelector((s) => s.account.status === 'signedIn')
   const overrides = useSelector((s) => s.designEdits.byLead[lead.id] || NONE)
   const { template } = useProposalTemplate()
+  const savedEmail = useSelector((s) => leadEmail(lead, s.tracking.byPlaceId[lead.id]))
   const company = displayName(lead)
 
   const [status, setStatus] = useState(null) // { enabled, sent_today, daily_limit }
-  const [to, setTo] = useState('')
+  const [to, setTo] = useState(savedEmail)
+  const [toEdited, setToEdited] = useState(false)
   const [subject, setSubject] = useState(() => suggestSubject({ kind, company, offering: offeringLabel, ourName: business.our_name }))
   const [body, setBody] = useState(() => (kind === 'proposal' ? coverNote({ company, offering: offeringLabel, business }) : draftText || ''))
   const [bodyEdited, setBodyEdited] = useState(false)
@@ -51,6 +54,11 @@ export default function SendEmailPanel({ lead, kind, draftText, offeringLabel, t
     if (kind === 'proposal' && attach === 'none') setAttach(template ? 'designed' : draftText ? 'text' : 'none')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template])
+
+  // The saved address can arrive after this opened; fill it in unless the person has typed their own.
+  useEffect(() => {
+    if (!toEdited && savedEmail) setTo(savedEmail)
+  }, [savedEmail, toEdited])
 
   useEffect(() => {
     if (!signedIn) return undefined
@@ -129,7 +137,8 @@ export default function SendEmailPanel({ lead, kind, draftText, offeringLabel, t
       ) : null}
 
       <div className="send-grid">
-        <TextField label="Send to" type="email" value={to} onChange={setTo} placeholder="name@company.com" autoComplete="off" inputMode="email"
+        <TextField label="Send to" type="email" value={to} onChange={(v) => { setTo(v); setToEdited(true) }} placeholder="name@company.com" autoComplete="off" inputMode="email"
+          hint={savedEmail && to === savedEmail ? 'Filled in from this company’s details.' : !savedEmail && !to ? 'We do not have an email for this company yet. Type one in; we will remember it.' : undefined}
           error={to && !addressOk ? 'Enter one email address.' : undefined} />
         <div className="send-subject">
           <TextField label="Subject" value={subject} onChange={setSubject} />
