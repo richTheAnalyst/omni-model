@@ -10,7 +10,7 @@ import { selectBusiness } from '../store/selectors.js'
 import Button from './Button.jsx'
 
 /** The request body for one company. */
-export function proposalBody(lead, offeringLabel, business) {
+export function proposalBody(lead, offeringLabel, business, overrides) {
   return {
     company: displayName(lead),
     city: lead.city || '',
@@ -21,6 +21,7 @@ export function proposalBody(lead, offeringLabel, business) {
       our_email: business?.our_email || '',
       our_phone: business?.our_phone || '',
     },
+    overrides: overrides || {},
   }
 }
 
@@ -39,7 +40,7 @@ export default function ProposalPdfDownload({ items, size = 'sm', variant = 'sec
   const go = async () => {
     setState({ busy: true, error: '', done: '' })
     try {
-      const bodies = items.map((i) => proposalBody(i.lead, i.offeringLabel, business))
+      const bodies = items.map((i) => proposalBody(i.lead, i.offeringLabel, business, i.overrides))
       let blob, filename
       if (items.length === 1) {
         blob = await renderProposal(bodies[0])
@@ -64,7 +65,7 @@ export default function ProposalPdfDownload({ items, size = 'sm', variant = 'sec
       <Button size={size} variant={variant} icon="download" loading={state.busy} onClick={go}>
         {many ? `Download ${items.length} proposals (zip)` : 'Download proposal as PDF'}
       </Button>
-      <span className="muted small">Your own design ({template.filename}). Edits to the text below do not change this PDF.</span>
+      <span className="muted small">Your own design ({template.filename}). Change its wording with “Edit my design”. Edits to the text below do not change this PDF.</span>
       {state.error ? <p className="notice notice-warn" role="alert">{state.error}</p> : null}
       {state.done ? <p className="muted small" role="status">{state.done}</p> : null}
     </div>

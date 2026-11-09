@@ -4,7 +4,10 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import BusinessForm from '../components/BusinessForm.jsx'
 import Button, { LinkButton } from '../components/Button.jsx'
 import DraftEditor from '../components/DraftEditor.jsx'
+import DesignEditor from '../components/DesignEditor.jsx'
 import ProposalPdfDownload from '../components/ProposalPdfDownload.jsx'
+import SendEmailPanel from '../components/SendEmailPanel.jsx'
+import useProposalTemplate from '../hooks/useProposalTemplate.js'
 import Icon from '../components/Icon.jsx'
 import { SelectField } from '../components/Fields.jsx'
 import { EmptyState, ErrorPanel, Skeleton } from '../components/States.jsx'
@@ -35,6 +38,10 @@ export default function OutreachWorkspace() {
   const drafts = useSelector((s) => s.outreach.drafts)
   const statuses = useSelector((s) => s.outreach.statusByKey)
   const [kind, setKind] = useState('email')
+  const [editingDesign, setEditingDesign] = useState(false)
+  const { template: proposalTemplate } = useProposalTemplate()
+  const designOverrides = useSelector((s) => s.designEdits.byLead[leadId] || null)
+  const trackedId = useSelector((s) => s.tracking.byPlaceId[leadId]?.id)
   const tabRefs = useRef({})
   const name = lead ? displayName(lead) : 'Company'
   useDocumentTitle(`Outreach · ${name}`)
@@ -223,7 +230,20 @@ export default function OutreachWorkspace() {
           </div>
 
           <div role="tabpanel" id="outreach-panel" aria-labelledby={`tab-${kind}`} className="tab-panel">
-            {activeKind.id === 'proposal' ? <ProposalPdfDownload items={[{ lead, offeringLabel: offerings[offering] || '' }]} /> : null}
+            {activeKind.id === 'proposal' && proposalTemplate ? (
+              <>
+                <ProposalPdfDownload items={[{ lead, offeringLabel: offerings[offering] || '', overrides: designOverrides }]} />
+                {editingDesign ? (
+                  <DesignEditor lead={lead} offeringLabel={offerings[offering] || ''} onClose={() => setEditingDesign(false)} />
+                ) : (
+                  <p>
+                    <Button size="sm" variant="secondary" icon="pen" onClick={() => setEditingDesign(true)}>
+                      Edit my design{designOverrides ? ' (changes made)' : ''}
+                    </Button>
+                  </p>
+                )}
+              </>
+            ) : null}
             {loading ? (
               <div className="draft-loading" role="status" aria-live="polite">
                 <p className="muted">{COPY.loading.outreach}</p>
@@ -280,6 +300,16 @@ export default function OutreachWorkspace() {
           </div>
         </section>
       )}
+      {lead ? (
+        <SendEmailPanel
+          key={`${lead.id}-${activeKind.id}`}
+          lead={lead}
+          kind={activeKind.id === 'proposal' ? 'proposal' : activeKind.id === 'followup' ? 'followup' : 'email'}
+          draftText={draft?.text || ''}
+          offeringLabel={offerings[offering] || ''}
+          trackedId={trackedId}
+        />
+      ) : null}
     </div>
   )
 }

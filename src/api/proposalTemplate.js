@@ -16,3 +16,11 @@ export const renderProposal = (body, { signal } = {}) =>
 /** Several proposals as a zip Blob. items: the same shape as renderProposal's body. */
 export const renderProposals = (items, { signal } = {}) =>
   request('/proposal-template/render-many', { method: 'POST', body: { items }, auth: false, timeoutMs: 240_000, signal, responseType: 'blob' })
+
+/** The text on every page as it will read for this company: { pages: [{ width, height, lines: [{ i, text, box }] }] } */
+export const proposalLines = (body, { signal } = {}) =>
+  request('/proposal-template/lines', { method: 'POST', body, auth: false, timeoutMs: 60_000, signal })
+
+/** One page as a picture (a JPEG Blob), with the edits in body.overrides applied. */
+export const proposalPage = (body, { signal } = {}) =>
+  request('/proposal-template/page', { method: 'POST', body, auth: false, timeoutMs: 90_000, signal, responseType: 'blob' })
