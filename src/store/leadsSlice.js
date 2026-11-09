@@ -3,6 +3,8 @@ import { localDataCleared } from './actions.js'
 import { pickPersisted } from './persist.js'
 import { analyzeLead } from './analysisSlice.js'
 import { runSearch } from './searchSlice.js'
+import { leadFromTracked } from '../api/tracking.js'
+import { loadTracking } from './trackingSlice.js'
 
 const persisted = pickPersisted('leads')
 
@@ -16,7 +18,13 @@ const initialState = {
 const slice = createSlice({
   name: 'leads',
   initialState,
-  reducers: {},
+  reducers: {
+    // An email found on the company's website; a stored one is never replaced.
+    emailFound(state, { payload }) {
+      const lead = state.entities[payload.id]
+      if (lead && !lead.email && payload.email) lead.email = payload.email
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(runSearch.fulfilled, (state, { payload }) => {
@@ -47,6 +55,14 @@ const slice = createSlice({
           }
         }
       })
+      .addCase(loadTracking.fulfilled, (state, { payload }) => {
+        // Leads saved on another device are not in this browser yet: rebuild them from the server's copy.
+        for (const saved of payload.leads) {
+          if (state.entities[saved.place_id]) continue
+          state.entities[saved.place_id] = leadFromTracked(saved)
+          state.ids.push(saved.place_id)
+        }
+      })
       .addCase(localDataCleared, (state) => {
         state.ids = []
         state.entities = {}
@@ -63,6 +79,7 @@ const slice = createSlice({
           // The very first (estimated) scores are kept so before/after stays visible.
           before: lead.analysis?.before ?? { best_offering: lead.best_offering, scores: lead.scores },
         }
+        if (result.email && !lead.email) lead.email = result.email
         // Take the analysis result's ownership unless it is only a guess (never replace a stronger label with a weaker one).
         if (result.ownership_confidence && result.ownership_confidence !== 'assumed') {
           lead.ownership = result.ownership
@@ -78,4 +95,5 @@ const slice = createSlice({
   },
 })
 
+export const { emailFound } = slice.actions
 export default slice.reducer

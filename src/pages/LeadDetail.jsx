@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import { buttonClass, LinkButton } from '../components/Button.jsx'
+import EmailCell from '../components/EmailCell.jsx'
 import Icon from '../components/Icon.jsx'
 import {
   AnalysisPanel,
@@ -97,6 +98,9 @@ export default function LeadDetail() {
             ) : (
               <li className="muted">No phone listed</li>
             )}
+            <li>
+              <EmailCell lead={lead} />
+            </li>
             <li>
               {site ? (
                 <a href={site} target="_blank" rel="noopener noreferrer" className="inline-link">

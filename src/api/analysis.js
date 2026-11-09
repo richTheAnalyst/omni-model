@@ -53,6 +53,7 @@ export async function analyzeWebsite(payload, { signal } = {}) {
       best_offering: res?.best_offering || '',
       scores: res?.scores && typeof res.scores === 'object' ? res.scores : {},
       warning: typeof res?.warning === 'string' ? res.warning : '',
+      email: typeof res?.email === 'string' ? res.email : null,
       ownership: res?.ownership || 'non_government',
       ownership_confidence: res?.ownership_confidence || 'assumed',
       ownership_source: res?.ownership_source || 'none',
@@ -63,8 +64,3 @@ export async function analyzeWebsite(payload, { signal } = {}) {
     release()
   }
 }
-
-
-
-
-

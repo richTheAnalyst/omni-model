@@ -5,6 +5,7 @@ import { added, removed, toggled } from '../store/selectionSlice.js'
 import { Link, useNavigate } from 'react-router-dom'
 import { StatusTag } from './TrackingParts.jsx'
 import { bestEntry } from '../lib/score.js'
+import EmailCell from './EmailCell.jsx'
 import Icon from './Icon.jsx'
 import { displayName, formatRating, hostname, safeUrl, telHref } from '../lib/format.js'
 import { badgeText, ownershipOf } from '../lib/ownership.js'
@@ -68,7 +69,7 @@ function Pick({ lead, dnc, selected, onToggle }) {
   return (
     <input
       type="checkbox"
-      className="pick-box"
+      className="pick"
       checked={selected}
       disabled={dnc}
       onChange={() => onToggle(lead.id)}
@@ -112,6 +113,7 @@ const Row = memo(function Row({ lead, dnc, selected, onToggle }) {
         ) : (
           <span className="muted">No phone</span>
         )}
+        <span className="cell-email"><EmailCell lead={lead} /></span>
       </td>
       <td>
         <ExternalSite url={lead.website} />
@@ -143,7 +145,7 @@ export function LeadsTable({ leads, dncById }) {
         <thead>
           <tr>
             <th scope="col" className="cell-pick">
-              <input type="checkbox" className="pick-box" checked={allOn} disabled={!canAll} onChange={toggleAll} aria-label="Select all companies on this page" />
+              <input type="checkbox" className="pick" checked={allOn} disabled={!canAll} onChange={toggleAll} aria-label="Select all companies on this page" />
             </th>
             <th scope="col">Company</th>
             <th scope="col">Best-fit offering</th>
@@ -197,6 +199,7 @@ const Card = memo(function Card({ lead, dnc, selected, onToggle }) {
               <Icon name="phone" size={13} /> Call
             </a>
           ) : null}
+          <EmailCell lead={lead} compact />
           {site ? (
             <a href={site} target="_blank" rel="noopener noreferrer" className="chip-link">
               <Icon name="globe" size={13} /> Website
@@ -214,7 +217,7 @@ export function LeadCards({ leads, dncById }) {
   return (
     <>
     <label className="card-pick card-pick-all">
-      <input type="checkbox" className="pick-box" checked={allOn} disabled={!canAll} onChange={toggleAll} />
+      <input type="checkbox" className="pick" checked={allOn} disabled={!canAll} onChange={toggleAll} />
       <span>Select all on this page</span>
     </label>
     <ul className="lead-cards">

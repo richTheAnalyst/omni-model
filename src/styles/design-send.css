@@ -39,3 +39,6 @@ a.btn.is-disabled { opacity: .5; pointer-events: none; }
 @media (max-width: 719px) {
   .bulk-send-row { grid-template-columns: minmax(0, 1fr); }
 }
+
+.cell-email { display: block; font-size: var(--fs-sm); }
+.email-find .link-button { font-size: inherit; }
